@@ -102,17 +102,19 @@
   .bilgi .sayilar div { background: var(--kart2); border-radius: 12px; padding: 8px 4px; }
   .bilgi .sayilar b { display: block; font-size: 24px; color: var(--sari); }
   .bilgi .sayilar small { color: var(--soluk); font-size: 12px; }
+  .muzikBtn { display: none; position: fixed; left: 10px; bottom: calc(6px + env(safe-area-inset-bottom)); z-index: 5; font-size: 18px; line-height: 1; padding: 6px 9px; border-radius: 12px; background: rgba(5, 15, 25, .55); }
+  body[data-ekran=ana] .muzikBtn { display: block; }
   /* zarf + mektup */
-  .zarf { display: block; margin: 16px auto 0; width: 250px; background: transparent; padding: 0; animation: salla 4s ease-in-out infinite; transform-origin: 50% 90%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.55)); }
+  .zarf { display: block; margin: 16px auto 0; width: 170px; background: transparent; padding: 0; animation: salla 4s ease-in-out infinite; transform-origin: 50% 90%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.55)); }
   .zarf svg { width: 100%; height: auto; display: block; overflow: visible; }
   .zarf:hover { animation: none; transform: translateY(-5px) rotate(-1.5deg); }
   .zarf:hover .kapak { transform: scaleY(-.35); }
   .kapak { transform-box: fill-box; transform-origin: top; transition: transform .3s; }
   @keyframes salla { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-2.5deg); } 78% { transform: rotate(2.5deg); } 82% { transform: rotate(-1.5deg); } 86% { transform: rotate(1deg); } }
-  .mektup { background: #fbf3dc repeating-linear-gradient(180deg, transparent 0 31px, rgba(120,80,30,.13) 31px 32px); color: #3b2a14; border: 0; border-radius: 6px; max-width: 440px; width: 100%; padding: 26px 24px 20px; text-align: left; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,.6); max-height: 92vh; overflow: auto; animation: kagit .55s cubic-bezier(.2,.8,.3,1); font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; line-height: 32px; }
-  .mektup h2 { font-size: 24px; margin: 0 0 6px; color: #8a1c1c; line-height: 1.2; }
-  .mektup p { margin: 0 0 10px; font-size: 16px; }
-  .mektup .imza { text-align: right; color: #8a1c1c; font-size: 15px; margin-top: 6px; }
+  .mektup { background: #fbf3dc repeating-linear-gradient(180deg, transparent 0 31px, rgba(120,80,30,.13) 31px 32px); color: #3b2a14; border: 0; border-radius: 6px; max-width: 340px; width: 100%; padding: 20px 18px 14px; text-align: left; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,.6); max-height: 92vh; overflow: auto; animation: kagit .55s cubic-bezier(.2,.8,.3,1); font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; line-height: 32px; }
+  .mektup h2 { font-size: 20px; margin: 0 0 6px; color: #8a1c1c; line-height: 1.2; }
+  .mektup p { margin: 0 0 8px; font-size: 14px; line-height: 1.45; }
+  .mektup .imza { text-align: right; color: #8a1c1c; font-size: 13px; margin-top: 6px; }
   .mektup .muhur { position: absolute; top: -18px; right: 22px; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e04a3c, #8e1f16); display: grid; place-items: center; font-size: 22px; line-height: 1; box-shadow: 0 3px 6px rgba(0,0,0,.5); }
   .mektup .btn { margin-top: 8px; font-family: "Segoe UI", sans-serif; line-height: normal; }
   @keyframes kagit { from { transform: translateY(70px) rotate(-3deg) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -150,7 +152,7 @@
   main { min-width: 0; }
   .anaUst { display: flex; align-items: flex-start; justify-content: center; gap: 22px; }
   .anaUst .menu { flex: 1 1 auto; max-width: 420px; margin: 0; width: 100%; }
-  .anaUst .zarf { margin: 0; width: 240px; flex: none; }
+  .anaUst .zarf { margin: 0; width: 170px; flex: none; }
   .cevapRozet { display: inline-block; border-radius: 10px; padding: 1px 10px; font-size: 15px; font-weight: 800; margin-left: 6px; vertical-align: 2px; }
   .cevapRozet.e { background: var(--cim); color: #05261a; } .cevapRozet.h { background: var(--kirmizi); color: #fff; }
   .bilgi { padding: 12px 14px; }
@@ -163,7 +165,7 @@
   @media (max-width: 760px) {
     .anaUst { flex-direction: column; align-items: stretch; gap: 14px; }
     .anaUst .menu { max-width: none; }
-    .anaUst .zarf { align-self: flex-end; width: 215px; }
+    .anaUst .zarf { align-self: flex-end; width: 150px; }
     h1 .ust { letter-spacing: 2px; font-size: 10px; }
     [data-ekran=ana] h1 .ust { font-size: 11px; }
   }
@@ -171,13 +173,13 @@
   .anaUst { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
   .anaUst .menu { max-width: none; width: auto; margin: 0; align-content: start; }
   .zarfKutu { background: var(--kart); border-radius: 16px; display: grid; place-items: center; padding: 16px; box-shadow: 0 4px 0 rgba(0,0,0,.3); backdrop-filter: blur(3px); }
-  .anaUst .zarf { width: min(100%, 290px); align-self: auto; margin: 0; }
+  .anaUst .zarf { width: min(100%, 190px); align-self: auto; margin: 0; }
   #pasSahne { max-width: none; margin: 14px 0 0; padding-top: 8px; border-radius: 16px; border: 2px solid rgba(255,255,255,.35); overflow: hidden; box-shadow: 0 4px 0 rgba(0,0,0,.3);
     background: repeating-linear-gradient(90deg, #1f7a3a 0 56px, #1a6c33 56px 112px); }
   #pasSahne svg { max-width: 440px; margin: 0 auto; }
   @media (max-width: 760px) {
     .anaUst { grid-template-columns: 1fr; }
-    .anaUst .zarf { width: 240px; }
+    .anaUst .zarf { width: 160px; }
   }
   /* oyun ekranları: telefonda kaydırmadan tek ekrana sığsın */
   body[data-ekran=oyun] h1, body[data-ekran=oyun] p.alt, body[data-ekran=tek] h1, body[data-ekran=tek] p.alt { display: none; }
@@ -365,7 +367,8 @@
 <div id="stadRozet"></div>
 <canvas id="konfeti"></canvas>
 
-<div class="yapimci">⚽ Furkan Oruç tarafından yazıldı</div>
+<button id="muzikBtn" class="muzikBtn" aria-label="Müziği aç / kapat">🔊</button>
+<div class="yapimci">⚽ Furkan Oruç tarafından yapıldı</div>
 
 <main>
   <h1><span class="bas">Kim bu <em>futbolcu?</em></span></h1>
@@ -375,8 +378,8 @@
   <section class="ekran acik" id="ana">
     <div class="anaUst">
     <div class="menu">
-      <button class="btn" id="yeniMac">👥 İki Kişilik<small>Herkes kendi futbolcusunu saklar, birbirinizinkini bulun</small></button>
-      <button class="btn ikinci" id="tekMac">🤖 Tek Kişilik<small>Sen ve bilgisayar birbirinizin futbolcusunu bulun</small></button>
+      <button class="btn" id="tekMac">🤖 PC ile Oyna<small>Sen ve bilgisayar birbirinizin futbolcusunu bulun</small></button>
+      <button class="btn ikinci" id="yeniMac">👥 İki Kişilik Oyna<small>Aynı telefonda sırayla: herkes kendi futbolcusunu saklar, birbirinizinkini bulun</small></button>
       <button class="btn ikinci" id="devam" style="display:none">▶ Yarım kalan maça devam et</button>
       <button class="btn ikinci" id="kayitlarAc">🏆 Skor Tablosu</button>
       <button class="btn ikinci" id="kuralAc">❓ Nasıl oynanır?</button>
@@ -520,13 +523,19 @@
 <!-- Kurallar -->
 <div class="perde" id="kuralPerde"><div class="pencere" style="text-align:left">
   <h2>Nasıl oynanır?</h2>
-  <ul class="kural">
-    <li>Her turun başında sırası gelen yarışmacı <b>ligi seçer</b>. Sonra <b>ikiniz de</b> o ligden gizli birer futbolcu yazıp <b>SAKLA</b>'ya basarsınız (rakibiniz ekrana bakmaz). Tek kişilik modda bilgisayar da kendi futbolcusunu saklar.</li>
-    <li>Sırayla <b>5'er soru</b> sorarak birbirinizin futbolcusunu bulmaya çalışırsınız. Cevaplar baştan kayıtlı olduğu için kimse yanıltamaz.</li>
-    <li>Tek kişilik modda bilgisayar sana soru sorar, sen <b>Evet/Hayır</b> dersin. Yanlış cevap veremezsin, oyun doğrusunu bilir. Sen de bilgisayarın futbolcusunu sorularla bulmaya çalışırsın.</li>
-    <li>Rakibinin futbolcusunu <b>ilk bulan 10 puan</b> alır ve tur biter. Yanlış tahmin bir soru sayılır ve sıran biter. Bulana kadar sürer, istersen "Bu turu pas geç" diyebilirsiniz.</li>
-    <li>Başta seçilen puana önce ulaşan maçı kazanır.</li>
-  </ul>
+  <p class="soluk" style="margin:0 0 8px;font-size:14px"><b>Amaç:</b> Rakibinin gizlediği futbolcuyu, ona en az soru sorarak <b>ilk sen bul</b>. İlk bulan tur puanını alır, hedef puana ilk ulaşan maçı kazanır.</p>
+  <ol class="kural">
+    <li><b>Mod seç.</b> <i>PC ile Oyna</i>: bilgisayara karşı oynarsın. <i>İki Kişilik Oyna</i>: iki arkadaş aynı telefonu sırayla kullanır.</li>
+    <li><b>Maçı kur.</b> Takma adını yaz, topunu seç, kaç puana oynayacağınızı ve stadyumu seç (100 puan kısa, 900 puan çok uzun maçtır).</li>
+    <li><b>Lig seçilir.</b> Her turda sırası gelen taraf bir lig seçer (Süper Lig, Premier Lig, La Liga gibi). Bütün futbolcular o ligde oynamış oyunculardır.</li>
+    <li><b>Futbolcunu sakla.</b> Gizli bir futbolcu seç: adını yaz, listeden dokun ve <b>SAKLA</b>'ya bas. Rakip ekrana bakmasın! PC ile oynarken bilgisayar da kendi futbolcusunu saklar.</li>
+    <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
+    <li><b>Tahmin et.</b> Aklına gelen futbolcuyu "Tahmin" kutusuna yaz. Doğruysa <b>10 puan</b> senin ve tur biter. <b>Yanlış tahmin bir soru hakkı yakar ve sıran biter</b>, o yüzden emin olmadan tahmin etme.</li>
+    <li><b>PC ile oynarken:</b> bilgisayar sırası gelince senin futbolcuna soru sorar. Sen sadece <b>EVET</b> ya da <b>HAYIR</b> dersin. Doğru cevabı verdiğinden oyun emin olur: yanlış basarsan uyarır. Kayıt hatalıysa "Bu soruyu atla"ya veya aynı cevaba bir kez daha basarak devam edebilirsin.</li>
+    <li><b>Kimse bulamazsa</b> "Bu turu pas geç" diyerek yeni tura geçebilirsiniz.</li>
+    <li><b>Kazanan:</b> Hedef puana ilk ulaşan maçı alır. Sonunda skor tablosunu resim olarak kaydedip arkadaşlarına gönderebilirsin.</li>
+  </ol>
+  <p class="soluk" style="margin:10px 0 0;font-size:13px">İpucu: önce geniş soruları sor (ülke, mevki, kıta), sonra kulüplere in.</p>
   <button class="btn genis" id="kuralKapat">Tamam</button>
 </div></div>
 <!-- Futbolcuyu saklama (ikili mod, "rakibim saklasın") -->
@@ -734,7 +743,7 @@ function adimGoster(n) {
 $('adimIleri').onclick = () => adimGoster(adim + 1);
 $('adimGeri').onclick = () => { if (adim === 1) menuAc(); else adimGoster(adim - 1); };
 function kurulumAc(tek) {
-  tekMod = tek;
+  tekMod = tek; if (window.muzikSes) muzikSes.durdur();
   $('ayarB').style.display = tek ? 'none' : ''; $('ikili').classList.toggle('tek', tek);
   ayarCiz(0); ayarCiz(1); hedefCiz(); stadCiz(); adimGoster(1); goster('kurulum');
 }
@@ -1012,8 +1021,10 @@ function tekCevap(c) {
   const t = S && S.t, b = t && t.bekleyen; if (!b || S.faz !== 'oyun' || S.sira !== 1) return;
   const gizli = S.gizliler[0], kayit = b.tip === 'tahmin' ? b.idx === gizli : !!b.f(Y[gizli]), evet = c === 'e';
   // Veri bu futbolcu için kesin değilse (ör. orta saha/forvet arası) iki cevap da kabul edilir
-  if (evet !== kayit && !(b.bel && b.bel(Y[gizli]))) { t.uyari = 'Kayıtlarımıza göre cevap ' + (kayit ? 'EVET' : 'HAYIR') + '. Kayıt yanlışsa (veriler otomatik toplandı) "Bu soruyu atla"ya bas.'; return tekCiz(); }
-  t.uyari = ''; const dogru = evet;
+  // Kayıtlarla çelişen cevapta bir kez uyarılır; aynı cevaba ikinci kez basılırsa oyuncuya güvenilir (veri hatalı olabilir), oyun asla kilitlenmez
+  const celiski = evet !== kayit && !(b.bel && b.bel(Y[gizli]));
+  if (celiski && t.israr !== c + b.metin) { t.israr = c + b.metin; t.uyari = 'Kayıtlarımıza göre cevap ' + (kayit ? 'EVET' : 'HAYIR') + '. Senin verdiğin cevaptan eminsen aynı butona bir kez daha bas, ya da "Bu soruyu atla".'; return tekCiz(); }
+  t.uyari = ''; t.israr = ''; const dogru = evet;
   if (b.tip === 'tahmin') {
     t.gecmis.push({ metin: 'Tahmin: ' + Y[b.idx].ad, cevap: dogru });
     if (dogru) return turBitir(1);
@@ -1158,13 +1169,14 @@ function menuAc() {
   $('devam').style.display = d && !d.bitti && d.gizliler ? 'block' : 'none';
   $('ligTon').style.opacity = 0;
   stadUygula(null); $('pasSahne').innerHTML = pasSahne(); bilgiCiz();
-  goster('ana');
+  goster('ana'); if (window.muzikSes) muzikSes.baslat();
 }
 $('basla').onclick = () => {
   if (depo.oku('ft_durum', null) && !confirm('Yarım kalan maç silinecek, yeni maç başlasın mı?')) return;
   yeniMac();
 };
 $('devam').onclick = () => {
+  if (window.muzikSes) muzikSes.durdur();
   S = depo.oku('ft_durum', null); if (!S || !S.gizliler) { depo.sil('ft_durum'); S = null; return; }
   stadUygula(S.stad || null);
   if (S.gizliAcik) { S.tur++; return turBaslat(); } // tur sonu penceresi kapandıysa yeni turu başlat
@@ -1225,6 +1237,71 @@ function borazan(buyuk) {
     });
   } catch (e) {}
 }
+
+
+/* =============================================================
+   Giriş müziği: ana ekranda çalar, mod seçilince (kurulum başlayınca) kapanır.
+   Kendi müziğini eklemek istersen dosyayı muzik/giris.mp3 olarak koy; yoksa oyunun kendi marşı çalar.
+============================================================= */
+const muzik = (() => {
+  let ctx = null, ana = null, zamanlayici = null, el = null, acildi = false, calan = false, bar = 0;
+  let sessiz = !!depo.oku('ft_sessiz', false);
+  const AKOR = [[146.8, 174.6, 220], [116.5, 146.8, 174.6], [174.6, 220, 261.6], [110, 138.6, 164.8], [98, 116.5, 146.8], [116.5, 146.8, 174.6], [130.8, 164.8, 196], [146.8, 174.6, 220]];
+  const MEL = [[587, 523, 440, 587], [466, 440, 349, 466], [523, 587, 698, 880], [659, 554, 440, 554], [587, 466, 392, 587], [698, 587, 466, 587], [784, 659, 523, 659], [880, 698, 587, 880]];
+  const BAR = 2.6;
+  function nota(f, t, sure, tip, vol, kes) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), fl = ctx.createBiquadFilter();
+    o.type = tip; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.setValueAtTime(kes * .4, t); fl.frequency.linearRampToValueAtTime(kes, t + sure * .5);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(.25, sure * .3)); g.gain.setValueAtTime(vol, t + sure * .7); g.gain.linearRampToValueAtTime(0.0001, t + sure);
+    o.connect(fl); fl.connect(g); g.connect(ana); o.start(t); o.stop(t + sure + .05);
+  }
+  function davul(t, guc) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(48, t + .4);
+    g.gain.setValueAtTime(guc, t); g.gain.exponentialRampToValueAtTime(0.001, t + .9); o.connect(g); g.connect(ana); o.start(t); o.stop(t + .95);
+  }
+  function planla(t) {
+    const i = bar % AKOR.length; bar++;
+    AKOR[i].forEach((f, k) => { nota(f, t, BAR * 1.05, 'sawtooth', .05, 900); nota(f * 2.005, t, BAR * 1.05, 'sawtooth', .025, 1400); });
+    nota(AKOR[i][0] / 2, t, BAR, 'triangle', .12, 400);
+    MEL[i].forEach((f, k) => nota(f, t + k * BAR / 4, BAR / 4 * 1.25, 'sawtooth', .07, 2600));
+    davul(t, .55); if (i % 2) davul(t + BAR / 2, .3); davul(t + BAR * .75, .25);
+  }
+  function sentezBaslat() {
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      ana = ctx.createGain(); ana.gain.setValueAtTime(0.0001, ctx.currentTime); ana.gain.linearRampToValueAtTime(.9, ctx.currentTime + 1.5);
+      const yank = ctx.createDelay(1); yank.delayTime.value = .23; const yg = ctx.createGain(); yg.gain.value = .35;
+      ana.connect(ctx.destination); ana.connect(yank); yank.connect(yg); yg.connect(ctx.destination); yg.connect(yank);
+      bar = 0; let sonraki = ctx.currentTime + .1;
+      const don = () => { while (sonraki < ctx.currentTime + 3) { planla(sonraki); sonraki += BAR; } };
+      don(); zamanlayici = setInterval(don, 1000);
+    } catch (e) {}
+  }
+  function baslat() {
+    if (calan || sessiz || !acildi) return; calan = true;
+    try {
+      el = new Audio('muzik/giris.mp3'); el.loop = true; el.volume = .8;
+      el.addEventListener('error', () => { if (calan && !zamanlayici) { el = null; sentezBaslat(); } }, { once: true });
+      const pr = el.play(); if (pr && pr.catch) pr.catch(() => { if (calan && !zamanlayici) { el = null; sentezBaslat(); } });
+    } catch (e) { sentezBaslat(); }
+  }
+  function durdur() {
+    calan = false;
+    if (el) { try { el.pause(); } catch (e) {} el = null; }
+    if (zamanlayici) { clearInterval(zamanlayici); zamanlayici = null; }
+    if (ana && ctx) { try { ana.gain.cancelScheduledValues(ctx.currentTime); ana.gain.setValueAtTime(ana.gain.value, ctx.currentTime); ana.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + .4); const a = ana; setTimeout(() => { try { a.disconnect(); } catch (e) {} }, 600); } catch (e) {} ana = null; }
+  }
+  function ikon() { $('muzikBtn').textContent = sessiz ? '🔇' : '🔊'; }
+  $('muzikBtn').onclick = () => { acildi = true; sessiz = !sessiz; depo.yaz('ft_sessiz', sessiz); ikon(); if (sessiz) durdur(); else if (document.body.dataset.ekran === 'ana') baslat(); };
+  ikon();
+  // Tarayıcılar sesi ancak bir dokunuştan sonra açar: ilk dokunuşta çalmaya başlar
+  const ilk = () => { acildi = true; if (document.body.dataset.ekran === 'ana') baslat(); };
+  addEventListener('pointerdown', ilk, { once: true }); addEventListener('keydown', ilk, { once: true });
+  return { baslat, durdur };
+})();
+window.muzikSes = muzik;
 
 /* =============================================================
    Mobil uygulama (Capacitor) köprüsü: titreşim, paylaşma, geri tuşu. Tarayıcıda sessizce atlanır.
