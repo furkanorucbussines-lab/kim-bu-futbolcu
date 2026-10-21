@@ -972,7 +972,14 @@ function karistirSorular() {
   if (genel.length < 6) genel = genel.concat(liste.filter(x => x.q.harf));
   genel = genel.slice(0, EKRAN_SORU - 5);
   const kulup = liste.filter(x => x.q.kulup).slice(0, EKRAN_SORU - genel.length);
-  S.gosterilen = karistir(genel.concat(kulup).map(x => x.q.id));
+  let ids = genel.concat(kulup).map(x => x.q.id);
+  // Ayırt edici soru azaldıysa liste boş kalmasın: sorulmamış diğer sorular da (eski sistemdeki gibi) eklenir
+  if (ids.length < EKRAN_SORU) {
+    const sorulan = sorulanlar(sira), var_ = new Set(ids);
+    const yedek = karistir(SORULAR.filter(q => !sorulan.has(q.metin) && !var_.has(q.id) && !q.harf).sort((a, b) => (a.dyn ? 1 : 0) - (b.dyn ? 1 : 0)));
+    ids = ids.concat(yedek.slice(0, EKRAN_SORU - ids.length).map(q => q.id));
+  }
+  S.gosterilen = karistir(ids);
 }
 
 /* =============================================================
