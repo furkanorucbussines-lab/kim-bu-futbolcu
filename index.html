@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#06121f">
+<title>Kim Bu Futbolcu?</title>
+<style>
+  :root { --hue: 0deg; --cim: #2ecc71; --sari: #ffd43b; --kirmizi: #ff5c5c; --yazi: #f4f8fb; --soluk: #a9bccb; --kart: rgba(8, 24, 38, .82); --kart2: rgba(24, 56, 80, .9); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; color: var(--yazi); font-family: "Segoe UI", system-ui, sans-serif; background: #06121f; }
+  html { -webkit-text-size-adjust: 100%; }
+  * { -webkit-tap-highlight-color: transparent; }
+  body { padding: calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left)); display: flex; justify-content: center; overscroll-behavior: none; -webkit-user-select: none; user-select: none; }
+  input { -webkit-user-select: text; user-select: text; }
+  button { touch-action: manipulation; }
+  .btn.kucuk { min-height: 44px; }
+  main { width: 100%; max-width: 780px; position: relative; z-index: 1; }
+
+  /* ---------- Stadyum arka planı ---------- */
+  #stadyum { --t1: #27486a; --t2: #0f2740; --band: #e63946; --k1: #e2412f; --k2: #f2c200; position: fixed; inset: 0; z-index: 0; overflow: hidden; transition: filter 1.4s ease; filter: hue-rotate(var(--hue)); pointer-events: none; }
+  #stadyum svg { width: 100%; height: 100%; display: block; }
+  .flas { opacity: 0; animation: flas 4.5s infinite; }
+  @keyframes flas { 0%, 90% { opacity: 0; } 92% { opacity: 1; } 95% { opacity: .2; } 97%, 100% { opacity: 0; } }
+  .led { animation: ledParla 5s ease-in-out infinite alternate; }
+  @keyframes ledParla { from { opacity: .85; } to { opacity: 1; } }
+  .isik { animation: parilti 4s ease-in-out infinite alternate; }
+  @keyframes parilti { from { opacity: .75; } to { opacity: 1; } }
+
+  h1 { margin: 6px 0 4px; text-align: center; line-height: 1; }
+  h1 .ust { display: block; font-size: 11px; letter-spacing: 4px; font-weight: 800; color: var(--cim); text-shadow: 0 2px 6px rgba(0,0,0,.8); }
+  h1 .bas { display: block; font-family: Impact, "Arial Black", "Segoe UI", sans-serif; font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 34px; margin-top: 2px;
+    background: linear-gradient(180deg, #fff 10%, #ffe36a 50%, #ff9f1c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1px rgba(0,0,0,.35);
+    filter: drop-shadow(0 3px 0 #7a3a00) drop-shadow(0 6px 10px rgba(0,0,0,.7)); transform: skew(-6deg); }
+  h1 .bas em { font-style: inherit; display: block; background: linear-gradient(180deg, #fff 5%, #7dff9e 45%, #1fb85a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h2 { margin: 0 0 10px; font-size: 19px; }
+  p.alt { text-align: center; color: var(--soluk); margin: 0 0 14px; text-shadow: 0 2px 6px rgba(0,0,0,.7); }
+  .ekran { display: none; } .ekran.acik { display: block; }
+  .kart { background: var(--kart); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 0 rgba(0,0,0,.3); backdrop-filter: blur(3px); }
+  button { font: inherit; cursor: pointer; border: 0; color: inherit; }
+  .btn { background: var(--cim); color: #05261a; font-weight: 700; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 0 #17995a; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #17995a; }
+  .btn.ikinci { background: #2c5b7d; color: var(--yazi); box-shadow: 0 4px 0 #1b3d57; }
+  .btn.tehlike { background: var(--kirmizi); color: #fff; box-shadow: 0 4px 0 #b83c3c; }
+  .btn.genis { width: 100%; margin-top: 10px; font-size: 18px; }
+  .btn.kucuk { padding: 8px 14px; font-size: 14px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  input[type=text] { width: 100%; font: inherit; padding: 11px 14px; border-radius: 12px; border: 2px solid #2c5b7d; background: rgba(2, 12, 22, .85); color: var(--yazi); }
+  input[type=text]:focus { outline: none; border-color: var(--sari); }
+  .soluk { color: var(--soluk); }
+
+  /* ---------- Ayar ---------- */
+  .oyuncuAyar { display: grid; gap: 8px; margin-bottom: 12px; }
+  .oyuncuAyar .satir { display: flex; align-items: center; gap: 10px; }
+  .topSec { display: flex; gap: 6px; flex-wrap: wrap; }
+  .topSec button { background: transparent; border: 2px solid transparent; border-radius: 12px; padding: 3px; line-height: 0; }
+  .topSec button.secili { border-color: var(--sari); background: rgba(255, 212, 59, .15); }
+  .stilSec { display: flex; gap: 6px; }
+  .stilSec button { background: #214a69; border-radius: 10px; padding: 5px 10px; font-size: 13px; border: 2px solid transparent; }
+  .stilSec button.secili { border-color: var(--sari); }
+  .hedefSec { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hedefSec button { background: #214a69; border-radius: 10px; padding: 8px 14px; font-weight: 700; border: 2px solid transparent; }
+  .hedefSec button.secili { border-color: var(--sari); background: #2c6a96; color: var(--sari); }
+  .ligler { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .ligler button { background: linear-gradient(145deg, var(--lc), #0c2336 130%); padding: 16px 8px; border-radius: 14px; font-weight: 800; line-height: 1.2; border: 2px solid rgba(255,255,255,.25); text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+  .ligler button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+  .ligler small { display: block; color: var(--soluk); font-weight: 400; margin-top: 3px; }
+  /* ana ekran */
+  [data-ekran=ana] h1 .bas { font-size: clamp(44px, 12vw, 72px); }
+  [data-ekran=ana] h1 .ust { font-size: 13px; margin-top: 16px; }
+  [data-ekran=ana] p.alt { margin: 14px 0 20px; font-weight: 600; letter-spacing: .5px; }
+  #pasSahne { max-width: 440px; margin: 18px auto 4px; }
+  #pasSahne svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .pasX { animation: pasX 3.2s linear .16s infinite; }
+  .pasY { animation: pasY 3.2s linear .16s infinite; }
+  .pasD { transform-box: fill-box; transform-origin: center; animation: pasD 3.2s linear .16s infinite; }
+  @keyframes pasX { 0% { transform: translateX(0); } 45%, 50% { transform: translateX(144px); } 95%, 100% { transform: translateX(0); } }
+  @keyframes pasY { 0% { transform: translateY(0); animation-timing-function: ease-out; } 22.5% { transform: translateY(-44px); animation-timing-function: ease-in; } 45%, 50% { transform: translateY(0); animation-timing-function: ease-out; } 72.5% { transform: translateY(-44px); animation-timing-function: ease-in; } 95%, 100% { transform: translateY(0); } }
+  @keyframes pasD { 0% { transform: rotate(0); } 45% { transform: rotate(540deg); } 50% { transform: rotate(540deg); } 95%, 100% { transform: rotate(0deg); } }
+  .sut { animation: sut 3.2s ease-in-out infinite; }
+  .diz { animation: diz 3.2s ease-in-out infinite; }
+  .brazoA, .brazoB { animation: kolA 3.2s ease-in-out infinite; }
+  .brazoB { animation-name: kolB; }
+  .sutB { animation-delay: -1.6s; }
+  @keyframes sut { 0% { transform: rotate(42deg); } 5% { transform: rotate(-40deg); } 15%, 85% { transform: rotate(0); } 100% { transform: rotate(42deg); } }
+  @keyframes diz { 0% { transform: rotate(62deg); } 5% { transform: rotate(-4deg); } 15%, 85% { transform: rotate(6deg); } 100% { transform: rotate(62deg); } }
+  @keyframes kolA { 0% { transform: rotate(32deg); } 5% { transform: rotate(-38deg); } 15%, 85% { transform: rotate(0); } 100% { transform: rotate(32deg); } }
+  @keyframes kolB { 0% { transform: rotate(-32deg); } 5% { transform: rotate(36deg); } 15%, 85% { transform: rotate(-4deg); } 100% { transform: rotate(-32deg); } }
+  .pasG { transform-box: fill-box; transform-origin: center; animation: pasG 3.2s linear .16s infinite; }
+  @keyframes pasG { 0% { transform: scale(1); } 22.5% { transform: scale(.55); } 45%, 50% { transform: scale(1); } 72.5% { transform: scale(.55); } 95%, 100% { transform: scale(1); } }
+  .govde { animation: egil 1.6s ease-in-out infinite; }
+  @keyframes egil { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  .bilgi h2 { margin-bottom: 8px; }
+  .bilgi p { margin: 0 0 10px; line-height: 1.55; font-size: 15px; }
+  .bilgi .ligRozet { display: inline-block; border-radius: 20px; padding: 3px 11px; margin: 2px; font-size: 13px; font-weight: 700; border: 1.5px solid var(--lc); background: color-mix(in srgb, var(--lc) 22%, transparent); }
+  .bilgi .sayilar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; text-align: center; }
+  .bilgi .sayilar div { background: var(--kart2); border-radius: 12px; padding: 8px 4px; }
+  .bilgi .sayilar b { display: block; font-size: 24px; color: var(--sari); }
+  .bilgi .sayilar small { color: var(--soluk); font-size: 12px; }
+  /* zarf + mektup */
+  .zarf { display: block; margin: 16px auto 0; width: 250px; background: transparent; padding: 0; animation: salla 4s ease-in-out infinite; transform-origin: 50% 90%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.55)); }
+  .zarf svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .zarf:hover { animation: none; transform: translateY(-5px) rotate(-1.5deg); }
+  .zarf:hover .kapak { transform: scaleY(-.35); }
+  .kapak { transform-box: fill-box; transform-origin: top; transition: transform .3s; }
+  @keyframes salla { 0%, 70%, 100% { transform: rotate(0); } 74% { transform: rotate(-2.5deg); } 78% { transform: rotate(2.5deg); } 82% { transform: rotate(-1.5deg); } 86% { transform: rotate(1deg); } }
+  .mektup { background: #fbf3dc repeating-linear-gradient(180deg, transparent 0 31px, rgba(120,80,30,.13) 31px 32px); color: #3b2a14; border: 0; border-radius: 6px; max-width: 440px; width: 100%; padding: 26px 24px 20px; text-align: left; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,.6); max-height: 92vh; overflow: auto; animation: kagit .55s cubic-bezier(.2,.8,.3,1); font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive; line-height: 32px; }
+  .mektup h2 { font-size: 24px; margin: 0 0 6px; color: #8a1c1c; line-height: 1.2; }
+  .mektup p { margin: 0 0 10px; font-size: 16px; }
+  .mektup .imza { text-align: right; color: #8a1c1c; font-size: 15px; margin-top: 6px; }
+  .mektup .muhur { position: absolute; top: -18px; right: 22px; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e04a3c, #8e1f16); display: grid; place-items: center; font-size: 22px; line-height: 1; box-shadow: 0 3px 6px rgba(0,0,0,.5); }
+  .mektup .btn { margin-top: 8px; font-family: "Segoe UI", sans-serif; line-height: normal; }
+  @keyframes kagit { from { transform: translateY(70px) rotate(-3deg) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
+  /* stadyum seçimi + rozet */
+  .modSec { display: grid; gap: 8px; }
+  .modSec button { background: #214a69; border-radius: 12px; padding: 10px 12px; border: 2px solid transparent; text-align: left; line-height: 1.3; }
+  .modSec button b { display: block; font-size: 16px; }
+  .modSec button small { color: var(--soluk); font-size: 13px; }
+  .modSec button.secili { border-color: var(--sari); background: #2c6a96; }
+  .stadlar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stadlar button { background: #214a69; border-radius: 12px; padding: 10px 10px; border: 2px solid transparent; text-align: left; line-height: 1.25; display: flex; align-items: center; gap: 8px; }
+  .stadlar button b { display: block; font-size: 15px; }
+  .stadlar button small { color: var(--soluk); font-size: 12px; }
+  .stadlar button.secili { border-color: var(--sari); background: #2c6a96; }
+  .stadlar .renk { display: flex; flex-direction: column; gap: 3px; flex: none; }
+  .stadlar .renk i { display: block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,.5); }
+  [data-ekran=oyun] h1 .ust, [data-ekran=tek] h1 .ust { display: none; }
+  #stadRozet { position: fixed; top: calc(10px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); z-index: 6; display: none; background: rgba(6,18,31,.82); border: 2px solid var(--band, #e63946); border-radius: 20px; padding: 5px 14px; font-size: 14px; font-weight: 700; backdrop-filter: blur(3px); max-width: calc(100vw - 24px); text-align: right; }
+  [data-ekran=oyun] #stadRozet, [data-ekran=tek] #stadRozet { display: block; }
+  /* tek kişilik */
+  .ikili.tek { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .robot .konus { display: flex; align-items: center; gap: 12px; }
+  .robot .yuz { font-size: 54px; line-height: 1; flex: none; animation: egil 1.6s ease-in-out infinite; }
+  .robot .balon { position: relative; background: #fbf3dc; color: #22190c; border-radius: 16px; padding: 12px 14px; flex: 1; font-weight: 700; font-size: 19px; line-height: 1.3; }
+  .robot .balon::before { content: ''; position: absolute; left: -10px; top: 22px; border: 8px solid transparent; border-right-color: #fbf3dc; border-left: 0; }
+  .robot .balon small { display: block; font-weight: 500; font-size: 12px; color: #6b5a3a; margin-bottom: 2px; }
+  .cevapBtn { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .cevapBtn button { padding: 14px 6px; border-radius: 12px; font-weight: 800; font-size: 17px; }
+  .cevapBtn .e { background: var(--cim); color: #05261a; box-shadow: 0 4px 0 #17995a; }
+  .cevapBtn .hy { background: var(--kirmizi); color: #fff; box-shadow: 0 4px 0 #b83c3c; }
+  .cevapBtn .b { background: #2c5b7d; box-shadow: 0 4px 0 #1b3d57; font-size: 14px; }
+  .cevapBtn button:active { transform: translateY(2px); }
+  .adaySay { margin-top: 10px; font-size: 13px; color: var(--soluk); }
+  html, body { overflow-x: hidden; }
+  main { min-width: 0; }
+  .anaUst { display: flex; align-items: flex-start; justify-content: center; gap: 22px; }
+  .anaUst .menu { flex: 1 1 auto; max-width: 420px; margin: 0; width: 100%; }
+  .anaUst .zarf { margin: 0; width: 240px; flex: none; }
+  .cevapRozet { display: inline-block; border-radius: 10px; padding: 1px 10px; font-size: 15px; font-weight: 800; margin-left: 6px; vertical-align: 2px; }
+  .cevapRozet.e { background: var(--cim); color: #05261a; } .cevapRozet.h { background: var(--kirmizi); color: #fff; }
+  .bilgi { padding: 12px 14px; }
+  .bilgi h2 { font-size: 17px; margin-bottom: 6px; }
+  .bilgi p { font-size: 13.5px; line-height: 1.5; margin-bottom: 8px; }
+  .bilgi .ligRozet { font-size: 12px; padding: 2px 9px; }
+  .bilgi .sayilar { gap: 6px; margin: 8px 0; }
+  .bilgi .sayilar div { padding: 6px 2px; }
+  .bilgi .sayilar b { font-size: 20px; }
+  @media (max-width: 760px) {
+    .anaUst { flex-direction: column; align-items: stretch; gap: 14px; }
+    .anaUst .menu { max-width: none; }
+    .anaUst .zarf { align-self: flex-end; width: 215px; }
+    h1 .ust { letter-spacing: 2px; font-size: 10px; }
+    [data-ekran=ana] h1 .ust { font-size: 11px; }
+  }
+  /* ana ekran yerleşimi: solda menü, sağda zarf kartı, altında çim şeridi ve bilgi */
+  .anaUst { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+  .anaUst .menu { max-width: none; width: auto; margin: 0; align-content: start; }
+  .zarfKutu { background: var(--kart); border-radius: 16px; display: grid; place-items: center; padding: 16px; box-shadow: 0 4px 0 rgba(0,0,0,.3); backdrop-filter: blur(3px); }
+  .anaUst .zarf { width: min(100%, 290px); align-self: auto; margin: 0; }
+  #pasSahne { max-width: none; margin: 14px 0 0; padding-top: 8px; border-radius: 16px; border: 2px solid rgba(255,255,255,.35); overflow: hidden; box-shadow: 0 4px 0 rgba(0,0,0,.3);
+    background: repeating-linear-gradient(90deg, #1f7a3a 0 56px, #1a6c33 56px 112px); }
+  #pasSahne svg { max-width: 440px; margin: 0 auto; }
+  @media (max-width: 760px) {
+    .anaUst { grid-template-columns: 1fr; }
+    .anaUst .zarf { width: 240px; }
+  }
+  /* oyun ekranları: telefonda kaydırmadan tek ekrana sığsın */
+  body[data-ekran=oyun] h1, body[data-ekran=oyun] p.alt, body[data-ekran=tek] h1, body[data-ekran=tek] p.alt { display: none; }
+  body[data-ekran=oyun], body[data-ekran=tek] { padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+  body[data-ekran=oyun] main, body[data-ekran=tek] main { height: calc(100vh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: flex; flex-direction: column; }
+  body[data-ekran=oyun] main, body[data-ekran=tek] main { padding-top: 28px; }
+  [data-ekran=oyun] #stadRozet, [data-ekran=tek] #stadRozet { font-size: 12px; padding: 3px 11px; border-width: 1.5px; }
+  #oyun.acik, #tek.acik { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 6px; }
+  #oyun .kart, #tek .kart { margin: 0; padding: 8px 10px; border-radius: 12px; box-shadow: 0 2px 0 rgba(0,0,0,.3); }
+  #oyun h2, #tek h2 { font-size: 14px; margin: 0 0 6px; }
+  #oyun .skorlar, #tek .skorlar { gap: 6px; }
+  #oyun .oyuncuKutu, #tek .oyuncuKutu { padding: 6px 10px; border-radius: 10px; display: grid; grid-template-columns: 1fr auto; align-items: center; }
+  #oyun .oyuncuKutu .ad, #tek .oyuncuKutu .ad { font-size: 14px; gap: 6px; min-width: 0; }
+  #oyun .oyuncuKutu .puan, #tek .oyuncuKutu .puan { font-size: 22px; margin: 0; }
+  #oyun .oyuncuKutu .puan small, #tek .oyuncuKutu .puan small { font-size: 11px; }
+  #oyun .oyuncuKutu .cubuk, #tek .oyuncuKutu .cubuk { grid-column: 1 / -1; height: 4px; margin-top: 4px; }
+  #oyun .top svg, #tek .top svg { width: 22px; height: 22px; }
+  #oyun .durum, #tek .durum { padding: 6px 10px; font-size: 13px; line-height: 1.35; gap: 6px; }
+  #oyun .deger, #tek .deger { padding: 4px 10px; font-size: 12px; }
+  #oyun .deger b, #tek .deger b { font-size: 15px; }
+  .soruKart { flex: 1; min-height: 0; overflow: auto; }
+  #oyun .sorular { grid-template-columns: 1fr 1fr; gap: 6px; }
+  #oyun .soru { padding: 8px 9px; font-size: 13px; line-height: 1.2; min-height: 44px; }
+  #oyun .soruKart h2 .btn { padding: 4px 10px; min-height: 32px; font-size: 12px; }
+  .gecKart .gecmis { max-height: 78px; }
+  #oyun .gecKart h2, #oyun .tahminKart h2 { display: none; }
+  #oyun .gecmis li, #tek .gecmis li { padding: 4px 2px; font-size: 13px; }
+  #tek .gecKart.soruKart .gecmis { max-height: none; }
+  .tahminKart { position: relative; }
+  #oyun .tahminKart input { padding: 9px 12px; }
+  #oyun .oneriler { position: absolute; left: 0; right: 0; bottom: 100%; z-index: 8; margin: 0 0 4px; border: 1px solid rgba(255,255,255,.2); }
+  #oyun .sag, #tek .sag { margin-top: 0; }
+  #tek .robot .yuz { font-size: 36px; }
+  #tek .robot .balon { font-size: 16px; padding: 8px 10px; }
+  #tek .cevapBtn { margin-top: 8px; } #tek .cevapBtn button { padding: 10px 6px; }
+  #tek .adaySay { margin-top: 6px; }
+  .menu { display: grid; gap: 12px; max-width: 420px; margin: 0 auto; }
+  .menu .btn { font-size: 20px; padding: 16px 20px; margin: 0; }
+  .menu .btn small { display: block; font-size: 13px; font-weight: 500; opacity: .75; }
+  /* kurulum adımları */
+  .adimlar { display: flex; justify-content: center; gap: 8px; margin: 4px 0 14px; }
+  .adimlar span { padding: 5px 14px; border-radius: 20px; background: rgba(8,24,38,.7); color: var(--soluk); font-size: 14px; font-weight: 700; }
+  .adimlar span.on { background: var(--sari); color: #3d2e00; }
+  .adimlar span.bitti { color: var(--cim); }
+  .adim { display: none; } .adim.acik { display: block; }
+  .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .ikili { grid-template-columns: 1fr; } }
+  .oyuncuAyar { background: var(--kart); border: 2px solid var(--oc, #2c5b7d); border-radius: 16px; padding: 12px; box-shadow: 0 0 16px color-mix(in srgb, var(--oc, #2c5b7d) 45%, transparent); }
+  .oyuncuAyar .etiket { font-size: 13px; font-weight: 700; color: var(--soluk); letter-spacing: .5px; }
+  .adimBtn { margin-top: 4px; }
+  .adimBtn .btn { flex: 1; min-width: 120px; }
+  .hedefSec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .hedefSec button { background: #214a69; border-radius: 12px; padding: 10px 6px; border: 2px solid transparent; text-align: center; line-height: 1.2; }
+  .hedefSec button b { display: block; font-size: 26px; }
+  .hedefSec button .ad { display: block; font-weight: 700; margin-top: 2px; }
+  .hedefSec button small { display: block; color: var(--soluk); font-size: 12px; margin-top: 2px; }
+  .hedefSec button .kupalar { display: block; font-size: 12px; min-height: 16px; }
+  .hedefSec button.secili { border-color: var(--sari); background: #2c6a96; }
+  .hedefSec button.secili b { color: var(--sari); }
+  .vs { display: flex; align-items: center; justify-content: space-around; gap: 8px; text-align: center; margin-bottom: 10px; }
+  .vs .ad { font-weight: 800; font-size: 18px; margin-top: 4px; word-break: break-word; }
+  .vs .orta { font-size: 24px; font-weight: 800; color: var(--sari); }
+  #ligTon { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity 1s, background 1s; background: radial-gradient(ellipse at 50% 25%, var(--ton, transparent) 0%, transparent 75%); }
+  .kural { margin: 0; padding-left: 18px; color: var(--soluk); line-height: 1.6; font-size: 14px; }
+
+  /* ---------- Skor tablosu ---------- */
+  .skorlar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .oyuncuKutu { background: var(--kart2); border-radius: 14px; padding: 10px 12px; border: 2px solid transparent; position: relative; overflow: hidden; }
+  .oyuncuKutu.aktif { border-color: var(--sari); box-shadow: 0 0 18px rgba(255, 212, 59, .45); }
+  .oyuncuKutu .ad { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; }
+  .oyuncuKutu .ad span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .oyuncuKutu .puan { font-size: 34px; font-weight: 800; color: var(--sari); line-height: 1.1; margin-top: 2px; }
+  .oyuncuKutu .puan small { font-size: 14px; color: var(--soluk); font-weight: 600; }
+  .cubuk { height: 8px; border-radius: 6px; background: rgba(255,255,255,.12); margin-top: 6px; overflow: hidden; }
+  .cubuk i { display: block; height: 100%; background: linear-gradient(90deg, #2ecc71, #ffd43b); width: 0; transition: width .6s; }
+  .aktif .top { animation: zipla .7s ease-in-out infinite alternate; }
+  @keyframes zipla { from { transform: translateY(0) rotate(0); } to { transform: translateY(-7px) rotate(25deg); } }
+  .top { display: inline-block; line-height: 0; flex: none; }
+
+  .durum { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .durum b { color: var(--sari); }
+  .deger { background: var(--kart2); border-radius: 12px; padding: 8px 14px; font-weight: 700; }
+  .deger b { font-size: 22px; }
+
+  .sorular { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .soru { padding: 12px; border-radius: 12px; background: #1d5c86; text-align: left; line-height: 1.25; }
+  .soru:hover:not(:disabled) { background: #2878ae; }
+  .soru:disabled { opacity: .5; cursor: not-allowed; }
+  .gecmis { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow: auto; }
+  .gecmis li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 2px; border-bottom: 1px solid rgba(255,255,255,.1); font-size: 15px; }
+  .gecmis .kim { color: var(--soluk); font-size: 12px; display: block; }
+  .gecmis .e { color: var(--cim); font-weight: 800; } .gecmis .h { color: var(--kirmizi); font-weight: 800; }
+  .oneriler { margin-top: 6px; border-radius: 12px; overflow: hidden; background: rgba(2, 12, 22, .95); }
+  .oneriler button { display: block; width: 100%; text-align: left; padding: 10px 14px; background: transparent; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .oneriler button:hover { background: #1d5c86; }
+  .oneriler small { color: var(--soluk); }
+
+  /* ---------- Pencereler ---------- */
+  .perde { position: fixed; inset: 0; z-index: 20; background: rgba(0, 8, 16, .78); display: none; align-items: center; justify-content: center; padding: 16px; }
+  .perde.acik { display: flex; }
+  .pencere { background: #0c2336; border: 2px solid var(--sari); border-radius: 18px; padding: 20px; max-width: 460px; width: 100%; text-align: center; max-height: 92vh; overflow: auto; }
+  .pencere .buyuk { font-size: 26px; font-weight: 800; margin: 6px 0; }
+  .rozet { display: inline-block; background: #1d5c86; border-radius: 20px; padding: 2px 10px; margin: 2px; font-size: 14px; }
+  .kupa { font-size: 90px; line-height: 1; animation: zipla .6s ease-in-out infinite alternate; }
+  #konfeti { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none; }
+
+  /* ---------- Kayıtlar ---------- */
+  .kayit { display: flex; justify-content: space-between; gap: 10px; padding: 9px 4px; border-bottom: 1px solid rgba(255,255,255,.1); flex-wrap: wrap; }
+  .kayit .sk { font-weight: 800; color: var(--sari); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  th { color: var(--soluk); font-size: 13px; }
+  .sag { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="stadyum" aria-hidden="true">
+  <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="gok" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02060d"/><stop offset=".55" stop-color="#0a1f38"/><stop offset="1" stop-color="#16406a"/></linearGradient>
+      <linearGradient id="tribun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--t1)"/><stop offset="1" style="stop-color:var(--t2)"/></linearGradient>
+      <linearGradient id="cim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f7a3a"/><stop offset="1" stop-color="#0d4a22"/></linearGradient>
+      <linearGradient id="derinlik" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset=".5" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+      <linearGradient id="cati" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2636"/><stop offset="1" stop-color="#070d16"/></linearGradient>
+      <radialGradient id="isikH" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".25" stop-color="#cfe8ff" stop-opacity=".5"/><stop offset="1" stop-color="#9ccfff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="duman" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#bfe0ff" stop-opacity=".35"/><stop offset="1" stop-color="#bfe0ff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="kenar" cx=".5" cy=".55" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+      <pattern id="kalabalikU" width="96" height="20" patternUnits="userSpaceOnUse" patternTransform="scale(.92)"><rect x="0.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="3.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="8.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="11.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="16.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="19.9" cy="3.0" r="2.35" fill="#f3cfa8"/><rect x="24.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#1c2740"/><circle cx="27.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="32.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="35.9" cy="3.0" r="2.35" fill="#c88a5e"/><rect x="40.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="43.9" cy="3.0" r="2.35" fill="#f3cfa8"/><rect x="48.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="51.9" cy="3.0" r="2.35" fill="#f3cfa8"/><rect x="56.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="59.9" cy="3.0" r="2.35" fill="#6e4329"/><rect x="64.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="67.9" cy="3.0" r="2.35" fill="#6e4329"/><rect x="72.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="75.9" cy="3.0" r="2.35" fill="#6e4329"/><rect x="80.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="83.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="88.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="91.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="4.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#1c2740"/><circle cx="7.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="12.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="15.9" cy="13.0" r="2.35" fill="#e0a97c"/><rect x="20.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="23.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="28.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="31.9" cy="13.0" r="2.35" fill="#e0a97c"/><rect x="36.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="39.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="44.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="47.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="52.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="55.9" cy="13.0" r="2.35" fill="#f3cfa8"/><rect x="60.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="63.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="68.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="71.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="76.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="79.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="84.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="87.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="92.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="95.9" cy="13.0" r="2.35" fill="#c88a5e"/></pattern>
+      <pattern id="kalabalikA" width="96" height="20" patternUnits="userSpaceOnUse" patternTransform="scale(1.25)"><rect x="0.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="3.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="8.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="11.9" cy="3.0" r="2.35" fill="#c88a5e"/><rect x="16.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="19.9" cy="3.0" r="2.35" fill="#c88a5e"/><rect x="24.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="27.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="32.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="35.9" cy="3.0" r="2.35" fill="#c88a5e"/><rect x="40.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="43.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="48.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="51.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="56.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="59.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="64.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="67.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="72.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:#1c2740"/><circle cx="75.9" cy="3.0" r="2.35" fill="#e0a97c"/><rect x="80.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="83.9" cy="3.0" r="2.35" fill="#9a6340"/><rect x="88.6" y="5.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k2)"/><circle cx="91.9" cy="3.0" r="2.35" fill="#f3cfa8"/><rect x="4.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#1c2740"/><circle cx="7.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="12.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="15.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="20.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="23.9" cy="13.0" r="2.35" fill="#6e4329"/><rect x="28.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="31.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="36.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="39.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="44.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="47.9" cy="13.0" r="2.35" fill="#f3cfa8"/><rect x="52.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="55.9" cy="13.0" r="2.35" fill="#f3cfa8"/><rect x="60.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="63.9" cy="13.0" r="2.35" fill="#f3cfa8"/><rect x="68.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="71.9" cy="13.0" r="2.35" fill="#9a6340"/><rect x="76.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#7d8aa3"/><circle cx="79.9" cy="13.0" r="2.35" fill="#f3cfa8"/><rect x="84.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:var(--k1)"/><circle cx="87.9" cy="13.0" r="2.35" fill="#e0a97c"/><rect x="92.6" y="15.0" width="6.6" height="5.0" rx="2.2" style="fill:#ffffff"/><circle cx="95.9" cy="13.0" r="2.35" fill="#e0a97c"/></pattern>
+      <pattern id="koltuk" width="8" height="9" patternUnits="userSpaceOnUse"><rect y="8" width="8" height="1.2" fill="#000" opacity=".35"/></pattern>
+      <pattern id="afis" width="48" height="18" patternUnits="userSpaceOnUse"><rect width="22" height="14" style="fill:var(--k1)"/><rect x="22" width="22" height="14" style="fill:var(--k2)"/><rect y="14" width="48" height="2" fill="#000" opacity=".4"/></pattern>
+    </defs>
+    <rect width="800" height="600" fill="url(#gok)"/>
+    <g fill="#fff" opacity=".75"><circle cx="60" cy="40" r="1.3"/><circle cx="210" cy="80" r="1.1"/><circle cx="420" cy="26" r="1.4"/><circle cx="610" cy="70" r="1.1"/><circle cx="740" cy="36" r="1.3"/><circle cx="330" cy="110" r="1"/><circle cx="520" cy="120" r="1"/></g>
+    <ellipse cx="400" cy="190" rx="460" ry="150" fill="url(#duman)"/>
+    <!-- tribünler -->
+    <path d="M0 160 L800 160 L800 400 L0 400Z" fill="url(#tribun)"/>
+    <path d="M0 210 L800 210 L800 300 L0 300Z" fill="url(#kalabalikU)"/>
+    <path d="M0 322 L800 322 L800 396 L0 396Z" fill="url(#kalabalikA)"/>
+    <path d="M0 210 L800 210 L800 300 L0 300Z M0 322 L800 322 L800 396 L0 396Z" fill="url(#koltuk)"/>
+    <rect x="120" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="216" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="312" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="408" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="504" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="600" y="232" width="3" height="165" fill="#050b14" opacity=".55"/><rect x="696" y="232" width="3" height="165" fill="#050b14" opacity=".55"/>
+    <rect y="300" width="800" height="22" fill="#0a1220"/><rect y="300" width="800" height="2" fill="#2c3d55"/><rect x="14" y="305" width="9" height="9" fill="#ffd98a" opacity="0.53"/><rect x="30" y="305" width="9" height="9" fill="#ffd98a" opacity="0.57"/><rect x="46" y="305" width="9" height="9" fill="#ffd98a" opacity="0.79"/><rect x="62" y="305" width="9" height="9" fill="#ffd98a" opacity="0.83"/><rect x="78" y="305" width="9" height="9" fill="#ffd98a" opacity="0.41"/><rect x="94" y="305" width="9" height="9" fill="#ffd98a" opacity="0.80"/><rect x="110" y="305" width="9" height="9" fill="#ffd98a" opacity="0.39"/><rect x="126" y="305" width="9" height="9" fill="#ffd98a" opacity="0.57"/><rect x="142" y="305" width="9" height="9" fill="#ffd98a" opacity="0.43"/><rect x="158" y="305" width="9" height="9" fill="#ffd98a" opacity="0.39"/><rect x="174" y="305" width="9" height="9" fill="#ffd98a" opacity="0.90"/><rect x="190" y="305" width="9" height="9" fill="#ffd98a" opacity="0.47"/><rect x="206" y="305" width="9" height="9" fill="#ffd98a" opacity="0.70"/><rect x="222" y="305" width="9" height="9" fill="#ffd98a" opacity="0.43"/><rect x="238" y="305" width="9" height="9" fill="#ffd98a" opacity="0.60"/><rect x="254" y="305" width="9" height="9" fill="#ffd98a" opacity="0.68"/><rect x="270" y="305" width="9" height="9" fill="#ffd98a" opacity="0.43"/><rect x="286" y="305" width="9" height="9" fill="#ffd98a" opacity="0.86"/><rect x="302" y="305" width="9" height="9" fill="#ffd98a" opacity="0.84"/><rect x="318" y="305" width="9" height="9" fill="#ffd98a" opacity="0.84"/><rect x="334" y="305" width="9" height="9" fill="#ffd98a" opacity="0.84"/><rect x="350" y="305" width="9" height="9" fill="#ffd98a" opacity="0.85"/><rect x="366" y="305" width="9" height="9" fill="#ffd98a" opacity="0.77"/><rect x="382" y="305" width="9" height="9" fill="#ffd98a" opacity="0.50"/><rect x="398" y="305" width="9" height="9" fill="#ffd98a" opacity="0.36"/><rect x="414" y="305" width="9" height="9" fill="#ffd98a" opacity="0.49"/><rect x="430" y="305" width="9" height="9" fill="#ffd98a" opacity="0.39"/><rect x="446" y="305" width="9" height="9" fill="#ffd98a" opacity="0.35"/><rect x="462" y="305" width="9" height="9" fill="#ffd98a" opacity="0.69"/><rect x="478" y="305" width="9" height="9" fill="#ffd98a" opacity="0.48"/><rect x="494" y="305" width="9" height="9" fill="#ffd98a" opacity="0.76"/><rect x="510" y="305" width="9" height="9" fill="#ffd98a" opacity="0.62"/><rect x="526" y="305" width="9" height="9" fill="#ffd98a" opacity="0.73"/><rect x="542" y="305" width="9" height="9" fill="#ffd98a" opacity="0.48"/><rect x="558" y="305" width="9" height="9" fill="#ffd98a" opacity="0.84"/><rect x="574" y="305" width="9" height="9" fill="#ffd98a" opacity="0.48"/><rect x="590" y="305" width="9" height="9" fill="#ffd98a" opacity="0.56"/><rect x="606" y="305" width="9" height="9" fill="#ffd98a" opacity="0.84"/><rect x="622" y="305" width="9" height="9" fill="#ffd98a" opacity="0.42"/><rect x="638" y="305" width="9" height="9" fill="#ffd98a" opacity="0.62"/><rect x="654" y="305" width="9" height="9" fill="#ffd98a" opacity="0.35"/><rect x="670" y="305" width="9" height="9" fill="#ffd98a" opacity="0.85"/><rect x="686" y="305" width="9" height="9" fill="#ffd98a" opacity="0.70"/><rect x="702" y="305" width="9" height="9" fill="#ffd98a" opacity="0.86"/><rect x="718" y="305" width="9" height="9" fill="#ffd98a" opacity="0.36"/><rect x="734" y="305" width="9" height="9" fill="#ffd98a" opacity="0.85"/><rect x="750" y="305" width="9" height="9" fill="#ffd98a" opacity="0.45"/><rect x="766" y="305" width="9" height="9" fill="#ffd98a" opacity="0.88"/><rect x="782" y="305" width="9" height="9" fill="#ffd98a" opacity="0.66"/>
+    <rect y="358" width="800" height="3" fill="#000" opacity=".25"/>
+    <path d="M0 160 L800 160 L800 400 L0 400Z" fill="url(#derinlik)"/>
+    <rect y="378" width="800" height="18" fill="url(#afis)" opacity=".9"/>
+    <!-- köşe tribünleri (yan görünüş) -->
+    <path d="M0 150 L74 215 L74 400 L0 440Z" fill="#06101c" opacity=".78"/><path d="M800 150 L726 215 L726 400 L800 440Z" fill="#06101c" opacity=".78"/>
+    <path d="M0 150 L74 215" stroke="#3b5272" stroke-width="2"/><path d="M800 150 L726 215" stroke="#3b5272" stroke-width="2"/>
+    <g><circle class="flas" cx="30" cy="377" r="1.8" fill="#fff" style="animation-delay:1.4s"/><circle class="flas" cx="186" cy="345" r="1.8" fill="#fff" style="animation-delay:2.7s"/><circle class="flas" cx="274" cy="349" r="1.8" fill="#fff" style="animation-delay:3.8s"/><circle class="flas" cx="432" cy="338" r="1.8" fill="#fff" style="animation-delay:3.2s"/><circle class="flas" cx="634" cy="265" r="1.8" fill="#fff" style="animation-delay:1.9s"/><circle class="flas" cx="554" cy="340" r="1.8" fill="#fff" style="animation-delay:0.3s"/><circle class="flas" cx="536" cy="302" r="1.8" fill="#fff" style="animation-delay:4.6s"/><circle class="flas" cx="627" cy="245" r="1.8" fill="#fff" style="animation-delay:2.6s"/><circle class="flas" cx="713" cy="339" r="1.8" fill="#fff" style="animation-delay:3.2s"/><circle class="flas" cx="457" cy="375" r="1.8" fill="#fff" style="animation-delay:4.5s"/><circle class="flas" cx="305" cy="280" r="1.8" fill="#fff" style="animation-delay:4.2s"/><circle class="flas" cx="276" cy="250" r="1.8" fill="#fff" style="animation-delay:1.5s"/><circle class="flas" cx="347" cy="274" r="1.8" fill="#fff" style="animation-delay:4.7s"/><circle class="flas" cx="442" cy="345" r="1.8" fill="#fff" style="animation-delay:4.4s"/><circle class="flas" cx="73" cy="270" r="1.8" fill="#fff" style="animation-delay:2.8s"/><circle class="flas" cx="407" cy="295" r="1.8" fill="#fff" style="animation-delay:1.0s"/><circle class="flas" cx="703" cy="234" r="1.8" fill="#fff" style="animation-delay:1.8s"/><circle class="flas" cx="285" cy="335" r="1.8" fill="#fff" style="animation-delay:4.6s"/><circle class="flas" cx="411" cy="252" r="1.8" fill="#fff" style="animation-delay:2.0s"/><circle class="flas" cx="240" cy="285" r="1.8" fill="#fff" style="animation-delay:2.1s"/><circle class="flas" cx="276" cy="313" r="1.8" fill="#fff" style="animation-delay:3.1s"/><circle class="flas" cx="203" cy="375" r="1.8" fill="#fff" style="animation-delay:2.3s"/><circle class="flas" cx="669" cy="330" r="1.8" fill="#fff" style="animation-delay:3.2s"/><circle class="flas" cx="412" cy="308" r="1.8" fill="#fff" style="animation-delay:3.4s"/><circle class="flas" cx="725" cy="290" r="1.8" fill="#fff" style="animation-delay:3.5s"/><circle class="flas" cx="216" cy="322" r="1.8" fill="#fff" style="animation-delay:1.8s"/></g>
+    <!-- çatı -->
+    <path d="M0 196 Q400 108 800 196 L800 222 Q400 150 0 222Z" fill="url(#cati)"/>
+    <path d="M0 222 Q400 150 800 222" stroke="#bcd6f2" stroke-width="2" fill="none" opacity=".55"/>
+    <path d="M0 196 Q400 108 800 196" stroke="#4a607e" stroke-width="1.5" fill="none"/>
+    <g opacity=".5" transform="translate(0,-2)"><path d="M40 189 L59 203 L78 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M78 189 L97 203 L116 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M116 189 L135 203 L154 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M154 189 L173 203 L192 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M192 189 L211 203 L230 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M230 189 L249 203 L268 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M268 189 L287 203 L306 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M306 189 L325 203 L344 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M344 189 L363 203 L382 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M382 189 L401 203 L420 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M420 189 L439 203 L458 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M458 189 L477 203 L496 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M496 189 L515 203 L534 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M534 189 L553 203 L572 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M572 189 L591 203 L610 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M610 189 L629 203 L648 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M648 189 L667 203 L686 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M686 189 L705 203 L724 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M724 189 L743 203 L762 189" stroke="#33465f" stroke-width="1.3" fill="none"/><path d="M762 189 L781 203 L800 189" stroke="#33465f" stroke-width="1.3" fill="none"/></g>
+    <!-- reklam panoları -->
+    <rect y="396" width="800" height="17" fill="#05080e"/>
+    <g class="led"><rect x="0" y="397" width="98" height="15" style="fill:var(--band)"/><rect x="8" y="401" width="40" height="3" fill="#fff" opacity=".75"/><rect x="8" y="406" width="24" height="2.2" fill="#fff" opacity=".5"/><rect x="100" y="397" width="98" height="15" style="fill:#0e3b82"/><rect x="108" y="401" width="53" height="3" fill="#fff" opacity=".75"/><rect x="108" y="406" width="41" height="2.2" fill="#fff" opacity=".5"/><rect x="200" y="397" width="98" height="15" style="fill:#f2f2f2"/><rect x="208" y="401" width="66" height="3" fill="#fff" opacity=".75"/><rect x="208" y="406" width="28" height="2.2" fill="#fff" opacity=".5"/><rect x="300" y="397" width="98" height="15" style="fill:#14213d"/><rect x="308" y="401" width="49" height="3" fill="#fff" opacity=".75"/><rect x="308" y="406" width="45" height="2.2" fill="#fff" opacity=".5"/><rect x="400" y="397" width="98" height="15" style="fill:#d8232a"/><rect x="408" y="401" width="62" height="3" fill="#fff" opacity=".75"/><rect x="408" y="406" width="32" height="2.2" fill="#fff" opacity=".5"/><rect x="500" y="397" width="98" height="15" style="fill:#0e3b82"/><rect x="508" y="401" width="45" height="3" fill="#fff" opacity=".75"/><rect x="508" y="406" width="49" height="2.2" fill="#fff" opacity=".5"/><rect x="600" y="397" width="98" height="15" style="fill:#f2f2f2"/><rect x="608" y="401" width="58" height="3" fill="#fff" opacity=".75"/><rect x="608" y="406" width="36" height="2.2" fill="#fff" opacity=".5"/><rect x="700" y="397" width="98" height="15" style="fill:#14213d"/><rect x="708" y="401" width="41" height="3" fill="#fff" opacity=".75"/><rect x="708" y="406" width="53" height="2.2" fill="#fff" opacity=".5"/></g>
+    <rect y="412" width="800" height="3" fill="#000" opacity=".5"/>
+    <!-- projektörler -->
+    <g class="isik">
+      <g fill="#8da0b5"><rect x="64" y="150" width="7" height="48"/><rect x="729" y="150" width="7" height="48"/></g>
+      <g><rect x="53" y="134" width="30" height="16" rx="2" fill="#2a3547"/><rect x="55" y="136" width="7" height="5" fill="#fff"/><rect x="55" y="143" width="7" height="5" fill="#fff"/><rect x="64" y="136" width="7" height="5" fill="#fff"/><rect x="64" y="143" width="7" height="5" fill="#fff"/><rect x="73" y="136" width="7" height="5" fill="#fff"/><rect x="73" y="143" width="7" height="5" fill="#fff"/></g><g><rect x="717" y="134" width="30" height="16" rx="2" fill="#2a3547"/><rect x="719" y="136" width="7" height="5" fill="#fff"/><rect x="719" y="143" width="7" height="5" fill="#fff"/><rect x="728" y="136" width="7" height="5" fill="#fff"/><rect x="728" y="143" width="7" height="5" fill="#fff"/><rect x="737" y="136" width="7" height="5" fill="#fff"/><rect x="737" y="143" width="7" height="5" fill="#fff"/></g><g><rect x="235" y="142" width="30" height="16" rx="2" fill="#2a3547"/><rect x="237" y="144" width="7" height="5" fill="#fff"/><rect x="237" y="151" width="7" height="5" fill="#fff"/><rect x="246" y="144" width="7" height="5" fill="#fff"/><rect x="246" y="151" width="7" height="5" fill="#fff"/><rect x="255" y="144" width="7" height="5" fill="#fff"/><rect x="255" y="151" width="7" height="5" fill="#fff"/></g><g><rect x="535" y="142" width="30" height="16" rx="2" fill="#2a3547"/><rect x="537" y="144" width="7" height="5" fill="#fff"/><rect x="537" y="151" width="7" height="5" fill="#fff"/><rect x="546" y="144" width="7" height="5" fill="#fff"/><rect x="546" y="151" width="7" height="5" fill="#fff"/><rect x="555" y="144" width="7" height="5" fill="#fff"/><rect x="555" y="151" width="7" height="5" fill="#fff"/></g><g><rect x="385" y="120" width="30" height="16" rx="2" fill="#2a3547"/><rect x="387" y="122" width="7" height="5" fill="#fff"/><rect x="387" y="129" width="7" height="5" fill="#fff"/><rect x="396" y="122" width="7" height="5" fill="#fff"/><rect x="396" y="129" width="7" height="5" fill="#fff"/><rect x="405" y="122" width="7" height="5" fill="#fff"/><rect x="405" y="129" width="7" height="5" fill="#fff"/></g>
+      <circle cx="68" cy="142" r="120" fill="url(#isikH)"/><circle cx="732" cy="142" r="120" fill="url(#isikH)"/>
+      <circle cx="250" cy="150" r="95" fill="url(#isikH)"/><circle cx="550" cy="150" r="95" fill="url(#isikH)"/><circle cx="400" cy="128" r="80" fill="url(#isikH)"/>
+    </g>
+    <!-- saha -->
+    <path d="M0 412 L800 412 L800 600 L0 600Z" fill="url(#cim)"/>
+    <rect y="412" width="800" height="16" fill="#000" opacity=".13"/><rect y="448" width="800" height="24" fill="#000" opacity=".13"/><rect y="500" width="800" height="32" fill="#000" opacity=".13"/><rect y="568" width="800" height="40" fill="#000" opacity=".13"/>
+    <g fill="none" stroke="#fff" stroke-opacity=".62" stroke-width="3">
+      <path d="M-40 596 L840 596"/><path d="M0 418 L800 418"/>
+      <ellipse cx="400" cy="520" rx="170" ry="56"/><path d="M400 418 L400 600"/>
+      <path d="M240 418 L170 470 L630 470 L560 418"/><path d="M330 418 L305 440 L495 440 L470 418"/>
+    </g>
+    <circle cx="400" cy="520" r="4" fill="#fff" opacity=".7"/>
+    <rect width="800" height="600" fill="url(#kenar)"/>
+    <rect width="800" height="600" fill="#000" opacity=".12"/>
+  </svg>
+</div>
+<div id="ligTon" aria-hidden="true"></div>
+<div id="stadRozet"></div>
+<canvas id="konfeti"></canvas>
+
+<main>
+  <h1><span class="ust">⚽ İKİ KİŞİLİK FUTBOL TAHMİN OYUNU</span><span class="bas">Kim bu <em>futbolcu?</em></span></h1>
+  <p class="alt" id="altYazi">Sor. Tahmin et. Şampiyon ol.</p>
+
+  <!-- 0. Ana ekran -->
+  <section class="ekran acik" id="ana">
+    <div class="anaUst">
+    <div class="menu">
+      <button class="btn" id="yeniMac">👥 İki Kişilik<small>Herkes kendi futbolcusunu saklar, birbirinizinkini bulun</small></button>
+      <button class="btn ikinci" id="tekMac">🤖 Tek Kişilik<small>Sen ve bilgisayar birbirinizin futbolcusunu bulun</small></button>
+      <button class="btn ikinci" id="devam" style="display:none">▶ Yarım kalan maça devam et</button>
+      <button class="btn ikinci" id="kayitlarAc">🏆 Skor Tablosu</button>
+      <button class="btn ikinci" id="kuralAc">❓ Nasıl oynanır?</button>
+      <button class="btn ikinci" id="fikirAc">💡 Fikrim var</button>
+    </div>
+    <div class="zarfKutu"><button class="zarf" id="zarfAc" aria-label="Oyunun hikâyesini aç">
+      <svg viewBox="0 0 260 182" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="zg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f8ecc9"/><stop offset="1" stop-color="#ead3a0"/></linearGradient></defs>
+        <rect x="10" y="28" width="240" height="148" rx="8" fill="url(#zg)" stroke="#b98f4d" stroke-width="1.5"/>
+        <path d="M10 174 L110 92" stroke="#c9a468" stroke-width="1.5" fill="none"/><path d="M250 174 L150 92" stroke="#c9a468" stroke-width="1.5" fill="none"/>
+        <path d="M10 30 L130 118 L250 30 Z" fill="#e3c88a" stroke="#b98f4d" stroke-width="1.5" class="kapak"/>
+        <circle cx="130" cy="112" r="17" fill="#b3261e"/><circle cx="130" cy="112" r="17" fill="none" stroke="#7d1510" stroke-width="2"/>
+        <text x="130" y="119" text-anchor="middle" font-size="19">⚽</text>
+        <text x="130" y="148" text-anchor="middle" font-size="25" font-weight="900" fill="#3b1f04" stroke="#fff6d8" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke" font-family="Segoe Script, Bradley Hand, Comic Sans MS, cursive">Oyunun Hikâyesi</text>
+        <text x="130" y="168" text-anchor="middle" font-size="12" font-weight="800" fill="#5a3410" stroke="#fff6d8" stroke-width="2.5" paint-order="stroke" font-family="Segoe UI, sans-serif" letter-spacing="1.5">AÇMAK İÇİN DOKUN</text>
+        <rect x="204" y="38" width="34" height="26" rx="2" fill="#fff8e6" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2" transform="rotate(4 221 51)"/>
+        <text x="221" y="57" text-anchor="middle" font-size="15" transform="rotate(4 221 51)">🇹🇷</text>
+      </svg>
+    </button></div>
+    </div>
+    <div id="pasSahne" aria-hidden="true"></div>
+    <div class="kart bilgi" id="bilgi" style="margin-top:14px"></div>
+  </section>
+
+  <!-- 1. Kurulum (3 adım) -->
+  <section class="ekran" id="kurulum">
+    <div class="adimlar" id="adimlar"></div>
+    <div class="adim" data-a="1">
+      <div class="ikili" id="ikili">
+        <div class="oyuncuAyar" id="ayarA"></div>
+        <div class="oyuncuAyar" id="ayarB"></div>
+      </div>
+    </div>
+    <div class="adim" data-a="2">
+      <div class="kart">
+        <h2>Kaç puana kadar oynansın?</h2>
+        <p class="soluk" style="margin:0 0 10px;font-size:14px">Her futbolcu 10 puan. Hedef büyüdükçe maç uzar.</p>
+        <div class="hedefSec" id="hedefSec"></div>
+      </div>
+    </div>
+    <div class="adim" data-a="3">
+      <div class="kart">
+        <h2>Hangi stadyumda oynansın?</h2>
+        <p class="soluk" style="margin:0 0 10px;font-size:14px">Seçtiğin stadyumun adı oyun sırasında sağ üstte yazar, tribünler de takımın renklerine bürünür.</p>
+        <div class="stadlar" id="stadSec"></div>
+      </div>
+    </div>
+    <div class="adim" data-a="4">
+      <div class="kart" id="ozet"></div>
+    </div>
+    <div class="sag adimBtn">
+      <button class="btn ikinci" id="adimGeri">← Geri</button>
+      <button class="btn" id="adimIleri">İleri →</button>
+      <button class="btn" id="basla">⚽ Maça Başla</button>
+    </div>
+  </section>
+
+  <!-- 2. Oyun -->
+  <section class="ekran" id="oyun">
+    <div class="kart">
+      <div class="skorlar" id="skorlar"></div>
+    </div>
+    <div class="kart durum">
+      <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span></div>
+      <div class="deger">Tur <span id="turNo">1</span> • <span id="ligEtiket"></span> • Bulursan: <b>+10</b></div>
+    </div>
+    <div class="kart soruKart">
+      <h2>Soru sor <button class="btn ikinci kucuk" id="karistir" style="float:right">🔀 Karıştır</button></h2>
+      <div class="sorular" id="sorular"></div>
+    </div>
+    <div class="kart gecKart">
+      <h2>Cevaplar</h2>
+      <ul class="gecmis" id="gecmis"></ul>
+      <p class="soluk" id="gecmisBos" style="margin:0">Henüz soru sorulmadı.</p>
+    </div>
+    <div class="kart tahminKart">
+      <h2>Tahmin et</h2>
+      <input type="text" id="tahminAra" placeholder="Futbolcu adı yaz…" autocomplete="off">
+      <div class="oneriler" id="tahminOneri"></div>
+    </div>
+    <div class="sag">
+      <button class="btn ikinci kucuk" id="menuDon">☰ Ana menü</button>
+      <button class="btn ikinci kucuk" id="turPas">Bu turu pas geç</button>
+    </div>
+  </section>
+
+  <!-- Tek kişilik oyun -->
+  <section class="ekran" id="tek">
+    <div class="kart"><div class="skorlar" id="tekSkor"></div></div>
+    <div class="kart durum">
+      <div><span class="soluk">Lig:</span> <b id="tekLig">-</b><br><span class="soluk">Bu turda kalan soru:</span> <b id="tekKalan">-</b><br><span class="soluk" id="tekHakSat"></span></div>
+      <div class="deger">Tur <span id="tekTur">1</span> • Bulursa: <b>+10</b></div>
+    </div>
+    <div class="kart robot">
+      <div class="konus"><div class="yuz">🤖</div><div class="balon" id="tekBalon"></div></div>
+      <div id="tekCevap" style="display:none">
+        <div class="cevapBtn" style="grid-template-columns:1fr 1fr"><button class="e" id="tekE">✅ Evet</button><button class="hy" id="tekH">❌ Hayır</button></div>
+        <div class="sag" style="margin-top:8px"><button class="btn ikinci kucuk" id="tekAtla">Bu soruyu atla</button></div>
+        <div class="adaySay" id="tekAday"></div>
+      </div>
+    </div>
+    <div class="kart gecKart soruKart">
+      <h2>Soru - cevap</h2>
+      <ul class="gecmis" id="tekGecmis"></ul>
+      <p class="soluk" id="tekGecmisBos" style="margin:0">Henüz soru sorulmadı.</p>
+    </div>
+    <div class="sag"><button class="btn ikinci kucuk" id="tekMenu">☰ Ana menü</button></div>
+  </section>
+
+  <!-- 3. Kayıtlar -->
+  <section class="ekran" id="kayitlar">
+    <div class="kart">
+      <h2>Şampiyonluk tablosu</h2>
+      <div id="sampiyon"></div>
+    </div>
+    <div class="kart">
+      <h2>Geçmiş maçlar</h2>
+      <div id="kayitListe"></div>
+      <div class="sag">
+        <button class="btn ikinci kucuk" id="kayitTemizle">Kayıtları sil</button>
+      </div>
+    </div>
+    <button class="btn genis" id="kayitGeri">← Geri</button>
+  </section>
+</main>
+
+<!-- Tur sonu penceresi -->
+<!-- Oyunun hikâyesi -->
+<div class="perde" id="hikayePerde"><div class="mektup">
+  <div class="muhur">⚽</div>
+  <h2>Oyunun Hikâyesi</h2>
+  <p>Bilecik'te askerlik görevini yapan <b>9 askerlik arkadaşı</b>, öğleden sonraları yoğun geçen eğitimlerin ardından kendi aralarında bir anda, rastgele bir oyun buldu: <b>futbolcu tahmin oyunu</b>.</p>
+  <p>Her akşam eğlenerek oynadıkları bu oyunu bir gün uygulama haline getirip diğer vatandaşların da oynamasını hayal ettiler.</p>
+  <p>Ve o 9 askerin hayali <b>şu an ellerinizin altında.</b></p>
+  <p>Teşekkür ederiz :)</p>
+  <div class="imza">— Bilecik'ten 9 asker arkadaş</div>
+  <button class="btn genis" id="hikayeKapat">Kapat</button>
+</div></div>
+<!-- Kurallar -->
+<div class="perde" id="kuralPerde"><div class="pencere" style="text-align:left">
+  <h2>Nasıl oynanır?</h2>
+  <ul class="kural">
+    <li>Her turun başında sırası gelen yarışmacı <b>ligi seçer</b>. Sonra <b>ikiniz de</b> o ligden gizli birer futbolcu yazıp <b>SAKLA</b>'ya basarsınız (rakibiniz ekrana bakmaz). Tek kişilik modda bilgisayar da kendi futbolcusunu saklar.</li>
+    <li>Sırayla <b>5'er soru</b> sorarak birbirinizin futbolcusunu bulmaya çalışırsınız. Cevaplar baştan kayıtlı olduğu için kimse yanıltamaz.</li>
+    <li>Tek kişilik modda bilgisayar sana soru sorar, sen <b>Evet/Hayır</b> dersin. Yanlış cevap veremezsin, oyun doğrusunu bilir. Sen de bilgisayarın futbolcusunu sorularla bulmaya çalışırsın.</li>
+    <li>Rakibinin futbolcusunu <b>ilk bulan 10 puan</b> alır ve tur biter. Yanlış tahmin bir soru sayılır ve sıran biter. Bulana kadar sürer, istersen "Bu turu pas geç" diyebilirsiniz.</li>
+    <li>Başta seçilen puana önce ulaşan maçı kazanır.</li>
+  </ul>
+  <button class="btn genis" id="kuralKapat">Tamam</button>
+</div></div>
+<!-- Futbolcuyu saklama (ikili mod, "rakibim saklasın") -->
+<div class="perde" id="saklaPerde" style="z-index:25"><div class="pencere">
+  <div class="buyuk" id="saklaBaslik"></div><div class="soluk" id="saklaAlt"></div>
+  <input type="text" id="saklaAd" placeholder="Futbolcunun adını yaz…" autocomplete="off" style="margin-top:12px">
+  <div class="oneriler" id="saklaOneri" style="text-align:left"></div>
+  <div id="saklaSecili" class="soluk" style="margin-top:8px;min-height:20px"></div>
+  <button class="btn genis" id="saklaBtn" disabled>🔒 SAKLA</button>
+</div></div>
+<!-- Lig seçimi -->
+<div class="perde" id="ligPerde"><div class="pencere" id="ligKutu"></div></div>
+<div class="perde" id="turPerde"><div class="pencere" id="turKutu"></div></div>
+<!-- Maç sonu penceresi -->
+<div class="perde" id="macPerde"><div class="pencere" id="macKutu"></div></div>
+
+<script src="oyuncular.js"></script>
+<script>
+/* =============================================================
+   Ayarlar
+============================================================= */
+let tekMod = false;
+const PC_HATA = 60, TEK_ATLA = 5, BILG_TOP = { renk: 6, stil: 'yildiz' };
+const BULMA_PUANI = 10, TUR_SORU = 5, TUR_SINIRI = 99999, EKRAN_SORU = 12, HEDEFLER = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+const LIGLER = [
+  { k: 'tr', ad: 'Trendyol Süper Lig', c: '#e63946' }, { k: 'en', ad: 'İngiltere Premier Lig', c: '#9b5de5' }, { k: 'es', ad: 'İspanya La Liga', c: '#ff8c1a' },
+  { k: 'it', ad: 'İtalya Serie A', c: '#2f80ed' }, { k: 'de', ad: 'Almanya Bundesliga', c: '#2ecc71' }, { k: 'fr', ad: 'Fransa Ligue 1', c: '#ff4fa0' }
+];
+const ligRenk = k => (LIGLER.find(l => l.k === k) || {}).c || '';
+const ligAd = k => (LIGLER.find(l => l.k === k) || {}).ad || '';
+const $ = id => document.getElementById(id);
+const kaçış = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const norm = s => s.toLocaleLowerCase('tr').replace(/ı/g, 'i').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ß/g, 'ss').replace(/ø/g, 'o').replace(/đ/g, 'd');
+const depo = {
+  oku(k, v) { try { const x = localStorage.getItem(k); return x ? JSON.parse(x) : v; } catch (e) { return v; } },
+  yaz(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  sil(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+/* =============================================================
+   Futbol topu (SVG) ve özelleştirme
+============================================================= */
+const TOPLAR = [
+  { ad: 'Klasik', base: '#ffffff', patch: '#1b1b1b' },
+  { ad: 'Kırmızı', base: '#ff4d4d', patch: '#ffffff' },
+  { ad: 'Mavi', base: '#3d8bff', patch: '#ffffff' },
+  { ad: 'Altın', base: '#ffd43b', patch: '#7a5a00' },
+  { ad: 'Neon', base: '#c8ff3d', patch: '#1d3b00' },
+  { ad: 'Pembe', base: '#ff9ad5', patch: '#5a0f3d' },
+  { ad: 'Siyah', base: '#262626', patch: '#ffd43b' },
+  { ad: 'Sarı-Kırmızı', base: '#ffcc00', patch: '#d3202a' },
+  { ad: 'Sarı-Lacivert', base: '#ffe000', patch: '#102a6b' },
+  { ad: 'Bordo-Mavi', base: '#7d1b3f', patch: '#37a8ff' }
+];
+const STILLER = [['klasik', 'Klasik'], ['cizgi', 'Çizgili'], ['yildiz', 'Yıldızlı']];
+let topSayac = 0;
+function pentagon(cx, cy, r, rot) {
+  return Array.from({ length: 5 }, (_, i) => { const a = (rot + i * 72) * Math.PI / 180; return (cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1); }).join(' ');
+}
+function yildiz(cx, cy, r) {
+  return Array.from({ length: 10 }, (_, i) => { const a = (-90 + i * 36) * Math.PI / 180, rr = i % 2 ? r * .45 : r; return (cx + rr * Math.cos(a)).toFixed(1) + ',' + (cy + rr * Math.sin(a)).toFixed(1); }).join(' ');
+}
+function topSVG(c, boyut) {
+  const id = 'tp' + (++topSayac), t = TOPLAR[c.renk] || TOPLAR[0];
+  let desen = '';
+  if (c.stil === 'cizgi') {
+    desen = '<g fill="' + t.patch + '"><rect x="-60" y="-34" width="120" height="14" transform="rotate(-25)"/><rect x="-60" y="-8" width="120" height="14" transform="rotate(-25)"/><rect x="-60" y="18" width="120" height="14" transform="rotate(-25)"/></g>';
+  } else if (c.stil === 'yildiz') {
+    desen = '<g fill="' + t.patch + '"><polygon points="' + yildiz(0, 0, 17) + '"/>' +
+      [[-30, -24], [30, -24], [-31, 24], [31, 24]].map(p => '<polygon points="' + yildiz(p[0], p[1], 9) + '"/>').join('') + '</g>';
+  } else {
+    let dis = '', cizgi = '';
+    for (let i = 0; i < 5; i++) {
+      const a = (-90 + i * 72) * Math.PI / 180;
+      dis += '<polygon points="' + pentagon(Math.cos(a) * 49, Math.sin(a) * 49, 17, -90 + i * 72 + 180) + '"/>';
+      cizgi += '<line x1="' + (Math.cos(a) * 15).toFixed(1) + '" y1="' + (Math.sin(a) * 15).toFixed(1) + '" x2="' + (Math.cos(a) * 33).toFixed(1) + '" y2="' + (Math.sin(a) * 33).toFixed(1) + '"/>';
+    }
+    desen = '<g fill="' + t.patch + '"><polygon points="' + pentagon(0, 0, 15, -90) + '"/>' + dis + '</g><g stroke="' + t.patch + '" stroke-width="2.4">' + cizgi + '</g>';
+  }
+  return '<svg width="' + boyut + '" height="' + boyut + '" viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><clipPath id="' + id + 'k"><circle r="48"/></clipPath><radialGradient id="' + id + 'g" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient></defs>' +
+    '<circle r="48" fill="' + t.base + '"/><g clip-path="url(#' + id + 'k)">' + desen + '</g>' +
+    '<circle r="48" fill="url(#' + id + 'g)"/><circle r="48" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="2"/></svg>';
+}
+const topHtml = (c, b) => '<span class="top">' + topSVG(c, b) + '</span>';
+
+/* =============================================================
+   Kurulum ekranı
+============================================================= */
+const kurulum = [{ ad: '', renk: 0, stil: 'klasik' }, { ad: '', renk: 1, stil: 'klasik' }];
+const kayitliKurulum = depo.oku('ft_kurulum', null);
+if (kayitliKurulum) kurulum.forEach((k, i) => Object.assign(k, kayitliKurulum[i] || {}));
+
+function ayarCiz(i) {
+  const k = kurulum[i], kap = $(i ? 'ayarB' : 'ayarA');
+  kap.style.setProperty('--oc', (TOPLAR[k.renk] || TOPLAR[0]).base);
+  kap.innerHTML = '<div class="etiket">' + (i ? '2. YARIŞMACI' : tekMod ? 'OYUNCU' : '1. YARIŞMACI') + '</div><div class="satir">' + topHtml(k, 64) + '<input type="text" maxlength="14" placeholder="' + (i ? '2. yarışmacı takma adı' : '1. yarışmacı takma adı') + '" value="' + kaçış(k.ad) + '"></div>' +
+    '<div class="topSec">' + TOPLAR.map((t, j) => '<button data-r="' + j + '" title="' + t.ad + '" class="' + (j === k.renk ? 'secili' : '') + '">' + topSVG({ renk: j, stil: k.stil }, 34) + '</button>').join('') + '</div>' +
+    '<div class="stilSec">' + STILLER.map(s => '<button data-s="' + s[0] + '" class="' + (s[0] === k.stil ? 'secili' : '') + '">' + s[1] + '</button>').join('') + '</div>';
+  const girdi = kap.querySelector('input');
+  girdi.oninput = () => { k.ad = girdi.value; };
+  kap.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { k.renk = +b.dataset.r; ayarCiz(i); });
+  kap.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { k.stil = b.dataset.s; ayarCiz(i); });
+}
+ayarCiz(0); ayarCiz(1);
+
+let hedef = +depo.oku('ft_hedef', 300); if (!HEDEFLER.includes(hedef)) hedef = 300;
+const HEDEF_AD = { 100: 'Hızlı Maç', 200: 'Kısa Maç', 300: 'Klasik', 400: 'Uzun Maç', 500: 'Maraton', 600: 'Zorlu', 700: 'Usta', 800: 'Şampiyon', 900: 'Efsane' };
+function hedefCiz() {
+  $('hedefSec').innerHTML = HEDEFLER.map(x => '<button data-h="' + x + '" class="' + (x === hedef ? 'secili' : '') + '"><span class="kupalar">' + '🏆'.repeat(x / 100 <= 3 ? 1 : x / 100 <= 6 ? 2 : 3) + '</span><b>' + x + '</b><span class="ad">' + HEDEF_AD[x] + '</span><small>' + (x / BULMA_PUANI) + ' futbolcu</small></button>').join('');
+  $('hedefSec').querySelectorAll('[data-h]').forEach(b => b.onclick = () => { hedef = +b.dataset.h; hedefCiz(); });
+}
+/* ---------- Ana ekran: pas veren iki forma ve oyun bilgisi ---------- */
+const KIT_FB = { ana: '#fcd116', ikinci: '#0b2a6b', desen: 'cizgi', kol: '#fcd116', sort: '#0b2a6b', corap: '#fcd116', serit: '#0b2a6b', no: '#ffffff', noCer: '#0b2a6b' };
+const KIT_GS = { ana: '#d8232a', ikinci: '#fdb913', desen: 'yarim', kol: '#d8232a', sort: '#d8232a', corap: '#fdb913', serit: '#d8232a', no: '#ffffff', noCer: '#6d0b10' };
+const KIT_BJK = { ana: '#ffffff', ikinci: '#111111', desen: 'cizgi', kol: '#ffffff', sort: '#111111', corap: '#111111', serit: '#ffffff', no: '#ffd43b', noCer: '#000000' };
+let figSay = 0;
+function figur(x, dir, kit, no, sac, kolSinif, ten) {
+  const id = 'kf' + (++figSay), forma = kit.ana, sort = kit.sort;
+  const yol = 'M-15 60 Q-16 52 -8 50.5 L8 50.5 Q16 52 15 60 L13.5 90 L-13.5 90Z';
+  const desen = kit.desen === 'cizgi' ? [-10, 0, 10].map(i => '<rect x="' + i + '" y="48" width="5" height="46"/>').join('') : '<rect x="0" y="48" width="16" height="46"/>';
+  const bacak = (hx, sinif, dizSinif) => '<g transform="translate(' + hx + ',88)"><g class="' + sinif + '">' +
+    '<rect x="-4.8" y="4" width="9.6" height="22" rx="3" fill="' + ten + '"/><rect x="-6.6" y="-2" width="13.2" height="19" rx="3" fill="' + sort + '"/>' +
+    '<g transform="translate(0,22)"><g class="' + dizSinif + '"><rect x="-4.3" y="-2" width="8.6" height="12" rx="3" fill="' + ten + '"/>' +
+    '<path d="M-5.2 7 L5.2 7 L4.6 27 L-4.6 27Z" fill="' + kit.corap + '"/><rect x="-5.1" y="12" width="10.2" height="3" fill="' + kit.serit + '" opacity=".9"/><rect x="-4.9" y="17" width="9.8" height="2" fill="' + kit.serit + '" opacity=".6"/>' +
+    '<path d="M-5 26 L4.5 26 Q9 26 12.5 29.5 Q14 31.5 12 32 L-5.5 32Z" fill="#161616"/><path d="M5 28 L10 30.5" stroke="#fff" stroke-width="1" opacity=".5"/></g></g></g></g>';
+  const kol = (px, sinif) => '<g transform="translate(' + px + ',58)"><g class="' + sinif + '"><rect x="-4.8" y="-3" width="9.6" height="15" rx="4.5" fill="' + kit.kol + '" stroke="rgba(0,0,0,.25)" stroke-width=".8"/><rect x="-3.6" y="9" width="7.2" height="19" rx="3.5" fill="' + ten + '"/><circle cx="0" cy="29.5" r="4" fill="' + ten + '"/></g></g>';
+  return '<g transform="translate(' + x + ',0) scale(' + dir + ',1)"><defs><clipPath id="' + id + '"><path d="' + yol + '"/></clipPath></defs><ellipse cx="3" cy="140.5" rx="30" ry="5" fill="rgba(0,0,0,.38)"/>' +
+    kol(-12, 'brazoA ' + kolSinif) + bacak(-5, 'piyon', 'dizDuz') +
+    '<g class="govde"><path d="' + yol + '" fill="' + forma + '" stroke="rgba(0,0,0,.35)" stroke-width="1"/><g clip-path="url(#' + id + ')" fill="' + kit.ikinci + '">' + desen + '</g><path d="' + yol + '" fill="url(#golgeG)"/>' +
+    '<path d="M-5.5 50.5 L0 59 L5.5 50.5Z" fill="' + ten + '" stroke="' + kit.ikinci + '" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<text x="0" y="80" text-anchor="middle" font-size="17" font-weight="900" font-family="Impact, Arial Black, sans-serif" fill="' + kit.no + '" stroke="' + kit.noCer + '" stroke-width="1.6" paint-order="stroke" transform="scale(' + dir + ',1)">' + no + '</text>' +
+    '<path d="M-13.5 86 L13.5 86 L15 103 L-15 103Z" fill="' + sort + '"/><path d="M0 88 L0 103" stroke="rgba(0,0,0,.35)" stroke-width="1"/><rect x="-13.5" y="86" width="27" height="2.5" fill="' + kit.ikinci + '" opacity=".6"/>' +
+    '<rect x="-4.3" y="42" width="8.6" height="10" fill="' + ten + '"/><circle cx="-10.5" cy="35" r="2.8" fill="' + ten + '"/><circle cx="0.5" cy="34" r="12.5" fill="' + ten + '"/>' +
+    '<path d="M-12.4 33 Q-14 17 1 18.8 Q14.5 19 13 32 Q10 24.5 3 25 Q-5 23.5 -12.4 33Z" fill="' + sac + '"/>' +
+    '<path d="M4 29 Q8.5 27.5 11.5 29.5" stroke="' + sac + '" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="8" cy="33" rx="1.7" ry="2.1" fill="#1c1410"/><path d="M12.8 35 Q15 37.5 12 38.5" stroke="#b97a55" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M5 41.5 Q8.5 43.5 12 41" stroke="#8a4a32" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>' +
+    bacak(6, 'sut ' + kolSinif, 'diz ' + kolSinif) + kol(12, 'brazoB ' + kolSinif) + '</g>';
+}
+function pasSahne() {
+  const sag = Math.random() < .5 ? KIT_GS : KIT_BJK;
+  return '<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="golgeG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient></defs>' +
+    figur(78, 1, KIT_FB, 10, '#2b1b10', 'sutA', '#e8b98f') + figur(322, -1, sag, 7, sag === KIT_BJK ? '#1f1a14' : '#a8773a', 'sutB', '#d9a077') +
+    '<g transform="translate(126,141)"><g class="pasX"><ellipse class="pasG" rx="8" ry="2.4" fill="rgba(0,0,0,.45)"/></g></g>' +
+    '<g transform="translate(126,131)"><g class="pasX"><g class="pasY"><g class="pasD"><g transform="translate(-9,-9)">' + topSVG({ renk: 0, stil: 'klasik' }, 18) + '</g></g></g></g></g></svg>';
+}
+function bilgiCiz() {
+  const say = x => x.toLocaleString('tr-TR');
+  const turk = Y.filter(p => p.uy === 'Türkiye').length, ulke = new Set(Y.map(p => p.uy)).size, kulup = new Set(Y.flatMap(p => p.kl)).size, aktif = Y.filter(aktifMi).length;
+  $('bilgi').innerHTML = '<h2>📋 Oyun bilgisi</h2>' +
+    '<p>Oyundaki futbolcular, <b>2000 yılından bu yana</b> Trendyol Süper Lig\'de ve Avrupa\'nın 5 büyük liginde (İngiltere, İspanya, İtalya, Almanya, Fransa) forma giyen <b>' + say(Y.length) + ' erkek futbolcudan</b> oluşuyor. Her turda bir lig seçilir, iki taraf da o ligden birer futbolcu saklar.</p>' +
+    '<div>' + LIGLER.map(l => '<span class="ligRozet" style="--lc:' + l.c + '">' + l.ad + ' • ' + say(havuz(l.k).length) + '</span>').join('') + '</div>' +
+    '<div class="sayilar"><div><b>' + say(turk) + '</b><small>Türk futbolcu</small></div><div><b>' + say(ulke) + '</b><small>farklı ülke</small></div><div><b>' + say(kulup) + '</b><small>kulüp</small></div></div>' +
+    '<p class="soluk" style="font-size:13px;margin:0">' + say(aktif) + ' futbolcu hâlâ aktif. Bir futbolcu birden fazla ligde oynadıysa her iki ligin listesinde de yer alır. Veriler Wikidata\'dan derlendi; tanınmış isimler seçildi, küçük hatalar olabilir.</p>';
+}
+// Tarayıcının/telefonun geri tuşu için: ana ekran dışındaki ekranlara girerken bir geçmiş kaydı eklenir, geri tuşu menüye (ya da önceki kurulum adımına) döner
+function goster(id) {
+  try {
+    const ic = history.state && history.state.ic;
+    if (id !== 'ana' && !ic) history.pushState({ ic: 1 }, '');
+    else if (id === 'ana' && ic) history.back();
+  } catch (e) {}
+  document.body.dataset.ekran = id; document.querySelectorAll('.ekran').forEach(e => e.classList.toggle('acik', e.id === id)); window.scrollTo(0, 0); }
+
+/* ---------- Stadyumlar ---------- */
+const STADYUMLAR = [
+  { k: 'bern', ad: 'Santiago Bernabéu', sehir: 'Madrid', t1: '#4a5f9e', t2: '#1c2a5c', band: '#f4f4f4', k1: '#ffffff', k2: '#8e7cff' },
+  { k: 'camp', ad: 'Camp Nou', sehir: 'Barselona', t1: '#3b4fb0', t2: '#1b1f5e', band: '#a50044', k1: '#a50044', k2: '#1f6fd1' },
+  { k: 'oldt', ad: 'Old Trafford', sehir: 'Manchester', t1: '#7a2a2a', t2: '#35090c', band: '#da291c', k1: '#da291c', k2: '#fbe122' },
+  { k: 'anfi', ad: 'Anfield', sehir: 'Liverpool', t1: '#8a2230', t2: '#3c0a12', band: '#c8102e', k1: '#c8102e', k2: '#f6eb61' },
+  { k: 'alli', ad: 'Allianz Arena', sehir: 'Münih', t1: '#a8323e', t2: '#4a0f17', band: '#dc052d', k1: '#dc052d', k2: '#2f8fe0' },
+  { k: 'siro', ad: 'San Siro', sehir: 'Milano', t1: '#6d3a3a', t2: '#2a1111', band: '#fb090b', k1: '#fb090b', k2: '#9aa0aa' },
+  { k: 'parc', ad: 'Parc des Princes', sehir: 'Paris', t1: '#2c4a8a', t2: '#0f1c44', band: '#e30613', k1: '#e30613', k2: '#4f84e8' },
+  { k: 'chob', ad: 'Chobani Şükrü Saracoğlu', sehir: 'İstanbul • Kadıköy', t1: '#2a3f8f', t2: '#0d1a4f', band: '#ffed00', k1: '#ffed00', k2: '#3a5fd0' },
+  { k: 'rams', ad: 'RAMS Park', sehir: 'İstanbul • Seyrantepe', t1: '#8a4a22', t2: '#3a1a0a', band: '#fdb912', k1: '#a90432', k2: '#fdb912' },
+  { k: 'tupr', ad: 'Tüpraş Stadyumu', sehir: 'İstanbul • Beşiktaş', t1: '#4a4a52', t2: '#17171b', band: '#ffffff', k1: '#ffffff', k2: '#9aa0aa' }
+];
+const stadBul = k => STADYUMLAR.find(s => s.k === k);
+const stadAd = k => (stadBul(k) || {}).ad || '';
+let stad = depo.oku('ft_stad', 'bern'); if (!stadBul(stad)) stad = 'bern';
+function stadUygula(k) {
+  const s = stadBul(k), st = $('stadyum').style;
+  ['--t1', '--t2', '--band', '--k1', '--k2'].forEach((v, i) => s ? st.setProperty(v, s[['t1', 't2', 'band', 'k1', 'k2'][i]]) : st.removeProperty(v));
+  $('stadRozet').textContent = s ? '🏟️ ' + s.ad : ''; $('stadRozet').style.setProperty('--band', s ? s.band : '#e63946');
+}
+function stadCiz() {
+  $('stadSec').innerHTML = STADYUMLAR.map(s => '<button data-s="' + s.k + '" class="' + (s.k === stad ? 'secili' : '') + '"><span class="renk"><i style="background:' + s.k1 + '"></i><i style="background:' + s.k2 + '"></i></span><span><b>' + s.ad + '</b><small>' + s.sehir + '</small></span></button>').join('');
+  $('stadSec').querySelectorAll('[data-s]').forEach(b => b.onclick = () => { stad = b.dataset.s; stadUygula(stad); stadCiz(); });
+}
+
+/* ---------- Kurulum adımları ---------- */
+let adim = 1;
+function adimGoster(n) {
+  adim = n;
+  document.querySelectorAll('.adim').forEach(e => e.classList.toggle('acik', +e.dataset.a === n));
+  $('adimlar').innerHTML = ['1 · Yarışmacılar', '2 · Uzunluk', '3 · Stadyum', '4 · Başla'].map((t, i) => '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'bitti' : '') + '">' + t + '</span>').join('');
+  $('adimIleri').style.display = n < 4 ? '' : 'none';
+  $('basla').style.display = n === 4 ? '' : 'none';
+  if (n === 3) stadUygula(stad);
+  if (n === 4) {
+    const ad = i => kaçış(kurulum[i].ad.trim() || ('Oyuncu ' + (i + 1)));
+    $('ozet').innerHTML = '<div class="vs"><div>' + topHtml(kurulum[0], 70) + '<div class="ad">' + ad(0) + '</div></div><div class="orta">VS</div><div>' + (tekMod ? topHtml(BILG_TOP, 70) + '<div class="ad">🤖 Bilgisayar</div>' : topHtml(kurulum[1], 70) + '<div class="ad">' + ad(1) + '</div>') + '</div></div>' +
+      '<div style="text-align:center"><span class="rozet">🏆 ' + hedef + ' puan • ' + HEDEF_AD[hedef] + '</span> <span class="rozet">' + (hedef / BULMA_PUANI) + ' futbolcu</span> <span class="rozet">🏟️ ' + kaçış(stadAd(stad)) + '</span>' + '</div>';
+  }
+}
+$('adimIleri').onclick = () => adimGoster(adim + 1);
+$('adimGeri').onclick = () => { if (adim === 1) menuAc(); else adimGoster(adim - 1); };
+function kurulumAc(tek) {
+  tekMod = tek;
+  $('ayarB').style.display = tek ? 'none' : ''; $('ikili').classList.toggle('tek', tek);
+  ayarCiz(0); ayarCiz(1); hedefCiz(); stadCiz(); adimGoster(1); goster('kurulum');
+}
+$('yeniMac').onclick = () => kurulumAc(false);
+$('tekMac').onclick = () => kurulumAc(true);
+$('zarfAc').onclick = () => $('hikayePerde').classList.add('acik');
+$('hikayeKapat').onclick = () => $('hikayePerde').classList.remove('acik');
+$('hikayePerde').onclick = e => { if (e.target === $('hikayePerde')) $('hikayePerde').classList.remove('acik'); };
+$('kuralAc').onclick = () => $('kuralPerde').classList.add('acik');
+$('fikirAc').onclick = () => { location.href = 'mailto:furkanoruc.bussinnes@gmail.com?subject=' + encodeURIComponent('Kim Bu Futbolcu? geri bildirim') + '&body=' + encodeURIComponent('Merhaba, oyunla ilgili düşüncelerim:\n\n\n\n(Cihaz: ' + navigator.userAgent.slice(0, 120) + ')'); };
+$('kuralKapat').onclick = () => $('kuralPerde').classList.remove('acik');
+
+/* =============================================================
+   Futbolcu ve soru havuzu
+============================================================= */
+const Y = OYUNCULAR;
+const TR_BUYUK3 = ['Galatasaray', 'Fenerbahçe', 'Beşiktaş'];
+const ULKE_AD = { tr: 'Türkiye', en: 'İngiltere', fr: 'Fransa', it: 'İtalya', de: 'Almanya', es: 'İspanya' };
+const MEVKI = { K: 'Kaleci', D: 'Defans', O: 'Orta saha', F: 'Forvet' };
+const UYRUK_SIFAT = { Brezilya: 'Brezilyalı', İspanya: 'İspanyol', Fransa: 'Fransız', İngiltere: 'İngiliz', Almanya: 'Alman', İtalya: 'İtalyan', Portekiz: 'Portekizli', Hollanda: 'Hollandalı',
+  Japonya: 'Japon', Arjantin: 'Arjantinli', Hırvatistan: 'Hırvat', Belçika: 'Belçikalı', Nijerya: 'Nijeryalı', Sırbistan: 'Sırp', Uruguay: 'Uruguaylı' };
+const aktifMi = p => p.son === 0;
+const havuz = lig => Y.map((p, i) => p.ul.includes(lig) ? i : -1).filter(i => i >= 0);
+let SORULAR = [];
+// Seçilen ligin futbolcularına göre soru listesi kurulur; iki cevabı da yeterince futbolcuya uymayan sorular elenir
+function kurSorular(lig) {
+  SORULAR = [];
+  const H = havuz(lig).map(i => Y[i]), esik = Math.max(6, Math.round(H.length * .06));
+  const ekle = (metin, f, kulup, zor, bel) => { const e = H.filter(f).length; if (e < esik || H.length - e < esik) return; SORULAR.push({ id: SORULAR.length, metin, f, kulup: !!kulup, zor: !!zor, bel: bel || null }); };
+  ekle('Türk futbolcu mu?', p => p.uy === 'Türkiye');
+  ekle("Galatasaray, Fenerbahçe veya Beşiktaş'tan birinde oynadı mı?", p => p.kl.some(k => TR_BUYUK3.includes(k)));
+  Object.entries(ULKE_AD).filter(([k]) => k !== lig).forEach(([k, ad]) => ekle(ad + ' liglerinde de oynadı mı?', p => p.ul.includes(k), false, false, p => !p.ul.includes(k)));
+  ekle('Birden fazla ülkenin liginde oynadı mı?', p => p.ul.length >= 2);
+  ekle("Kariyerinde 6'dan fazla kulüp değiştirdi mi?", p => p.kl.length > 6, false, true);
+  ekle('A milli takımda oynadı mı?', p => p.ml, false, true);
+  ekle("Dünya Kupası'nda (2002 sonrası) bulundu mu?", p => p.dk, false, true);
+  ekle('Avrupalı mı?', p => p.kt === 'Av');
+  ekle('Güney Amerikalı mı?', p => p.kt === 'GA');
+  ekle('Afrikalı mı?', p => p.kt === 'Af');
+  ekle('Asyalı mı?', p => p.kt === 'As');
+  const uyrukSay = {}; H.forEach(p => uyrukSay[p.uy] = (uyrukSay[p.uy] || 0) + 1);
+  Object.keys(uyrukSay).filter(u => u !== 'Türkiye' && UYRUK_SIFAT[u]).forEach(u => ekle(UYRUK_SIFAT[u] + ' mı?', p => p.uy === u));
+  ekle('Kaleci mi?', p => p.mv === 'K');
+  ekle('Defans oyuncusu mu?', p => p.mv === 'D', false, false, p => p.mv === 'O' || p.mv === 'D');
+  ekle('Orta saha oyuncusu mu?', p => p.mv === 'O', false, false, p => p.mv !== 'K');
+  ekle('Forvet mi?', p => p.mv === 'F', false, false, p => p.mv === 'O' || p.mv === 'F');
+  ekle('Hâlâ futbol oynuyor mu?', aktifMi, false, false, p => aktifMi(p) ? p.dg < 1986 : p.son >= 2019);
+  ekle('Son 10 yılda (2016 sonrası) oynadı mı?', p => aktifMi(p) || p.son >= 2016, false, false, p => !aktifMi(p) && p.son >= 2014 && p.son <= 2018);
+  ekle("2010'dan önce emekli oldu mu?", p => !aktifMi(p) && p.son < 2010, false, true);
+  const kulupSay = {}; H.forEach(p => p.kl.forEach(k => kulupSay[k] = (kulupSay[k] || 0) + 1));
+  Object.entries(kulupSay).filter(([, n]) => n >= esik).sort((a, b) => b[1] - a[1]).slice(0, 40).forEach(([k]) => ekle(k + ' formasını giydi mi?', p => p.kl.includes(k), true));
+}
+
+/* =============================================================
+   Oyun durumu
+============================================================= */
+let S = null;
+function kaydet() { if (S) depo.yaz('ft_durum', S); }
+function rastgele(n) { return Math.floor(Math.random() * n); }
+function karistir(dizi) { const a = dizi.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rastgele(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// Düello: herkes kendi futbolcusunu saklar (gizliler[i]), sırası gelen rakibinin futbolcusunu (gizliler[1 - sira]) arar
+const arananIdx = () => S.gizliler[1 - S.sira];
+
+function yeniMac() {
+  depo.yaz('ft_hedef', hedef);
+  const ad = i => (kurulum[i].ad.trim() || ('Oyuncu ' + (i + 1)));
+  let a = ad(0), b = tekMod ? 'Bilgisayar' : ad(1);
+  if (!tekMod && norm(a) === norm(b)) b += ' 2';
+  if (tekMod && norm(a) === 'bilgisayar') a += ' 2';
+  S = { adlar: [a, b], toplar: tekMod ? [{ renk: kurulum[0].renk, stil: kurulum[0].stil }, BILG_TOP] : kurulum.map(k => ({ renk: k.renk, stil: k.stil })), tek: tekMod, stad: stad, hedef: hedef, puan: [0, 0], tur: 1, lig: null, bulunan: 0, kullanilan: [], gizliler: [-1, -1], faz: 'lig', saklaSira: 0, gecmis: [], sira: 0, kalan: TUR_SORU, gosterilen: [], t: null, bitti: false, baslangic: Date.now() };
+  depo.yaz('ft_kurulum', kurulum); depo.yaz('ft_stad', stad); stadUygula(stad);
+  turBaslat();
+}
+// Ekranı duruma göre seçer: bilgisayarın sırasında "tek" ekranı, diğer her durumda "oyun" ekranı
+function yenile() {
+  const pc = !!S.tek && S.faz === 'oyun' && S.sira === 1, e = pc ? 'tek' : 'oyun';
+  if (document.body.dataset.ekran !== e) goster(e);
+  pc ? tekCiz() : ciz();
+}
+function turBaslat() {
+  // Önce sırası gelen yarışmacı ligi seçer, sonra herkes kendi futbolcusunu saklar
+  S.lig = null; S.gizliler = [-1, -1]; S.gecmis = []; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gosterilen = []; S.gizliAcik = false; S.faz = 'lig'; S.t = null; SORULAR = [];
+  kaydet(); yenile(); ligPenceresi();
+}
+function ligPenceresi() {
+  const secen = S.tek ? 0 : S.sira;
+  $('ligKutu').innerHTML = '<div class="buyuk">' + kaçış(S.adlar[secen]) + ', lig seç</div><div class="soluk">' + (S.tek ? 'Sen bu ligden bir futbolcu saklayacaksın, bilgisayar da kendi futbolcusunu saklayacak. İkiniz birbirinizinkini bulmaya çalışacaksınız.' : 'İkiniz de bu ligden gizli birer futbolcu saklayacaksınız, sonra birbirinizinkini bulmaya çalışacaksınız.') + '</div>' +
+    '<div class="ligler">' + LIGLER.map(l => '<button style="--lc:' + l.c + '" data-l="' + l.k + '">' + l.ad + '<small>' + havuz(l.k).length + ' futbolcu</small></button>').join('') + '</div>';
+  $('ligKutu').querySelectorAll('[data-l]').forEach(b => b.onclick = () => ligSec(b.dataset.l));
+  $('ligPerde').classList.add('acik');
+}
+function ligSec(k) {
+  S.lig = k; kurSorular(k); S.faz = 'sakla'; S.saklaSira = 0; S.gosterilen = [];
+  if (S.tek) { // bilgisayar kendi futbolcusunu rastgele saklar
+    const h = havuz(k); let aday = h.filter(i => !S.kullanilan.includes(i)); if (!aday.length) aday = h;
+    S.gizliler[1] = aday[rastgele(aday.length)]; S.kullanilan.push(S.gizliler[1]);
+    S.t = { adaylar: h, gecmis: [], bekleyen: null, atla: 0, atlanan: [], uyari: '' };
+  }
+  $('ligPerde').classList.remove('acik'); kaydet(); yenile(); saklaPenceresi();
+}
+function oyunuBaslat() {
+  S.faz = 'oyun'; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gecmis = [];
+  karistirSorular(); kaydet();
+  if (S.tek && S.sira === 1) return tekSonraki();
+  yenile();
+}
+function karistirSorular() {
+  // Karışık gelsin ama sadece kulüp sorularından oluşmasın: 7 genel + 5 kulüp. Sırası gelenin daha önce sorduğu sorular tekrar çıkmaz.
+  const sorulan = new Set(S.gecmis.filter(g => g.q != null && g.k === S.sira).map(g => g.q));
+  const uygun = SORULAR.filter(s => !sorulan.has(s.id));
+  const genel = karistir(uygun.filter(s => !s.kulup)).slice(0, EKRAN_SORU - 5);
+  const kulup = karistir(uygun.filter(s => s.kulup)).slice(0, EKRAN_SORU - genel.length);
+  S.gosterilen = karistir(genel.concat(kulup)).map(s => s.id);
+}
+
+/* =============================================================
+   Çizim (insanın sorduğu ekran)
+============================================================= */
+function ciz() {
+  $('stadyum').style.setProperty('--hue', (S.bulunan * 47 % 360) + 'deg');
+  document.documentElement.style.setProperty('--hue', (S.bulunan * 47 % 360) + 'deg');
+  $('ligTon').style.setProperty('--ton', ligRenk(S.lig) || 'transparent'); $('ligTon').style.opacity = S.lig ? .38 : 0;
+  $('skorlar').innerHTML = [0, 1].map(i =>
+    '<div class="oyuncuKutu' + (S.sira === i && S.faz === 'oyun' ? ' aktif' : '') + '"><div class="ad">' + topHtml(S.toplar[i], 30) + '<span>' + (S.tek && i ? '🤖 ' : '') + kaçış(S.adlar[i]) + '</span></div>' +
+    '<div class="puan">' + S.puan[i] + ' <small>/ ' + S.hedef + '</small></div><div class="cubuk"><i style="width:' + Math.min(100, S.puan[i] / S.hedef * 100) + '%"></i></div></div>').join('');
+  const oyunda = S.faz === 'oyun';
+  $('sira').textContent = S.adlar[S.sira];
+  $('hedefSat').textContent = oyunda ? S.adlar[1 - S.sira] + ' adlı oyuncunun saklı futbolcusunu arıyor' : 'Futbolcular saklanıyor…';
+  $('kalanTur').textContent = S.kalan; $('turNo').textContent = S.tur; $('ligEtiket').textContent = ligAd(S.lig) || 'Lig seçiliyor';
+  const dolu = !oyunda;
+  $('sorular').innerHTML = '';
+  S.gosterilen.forEach(id => {
+    const q = SORULAR[id]; if (!q) return;
+    const b = document.createElement('button'); b.className = 'soru'; b.textContent = q.metin; b.disabled = dolu || S.kalan <= 0;
+    b.onclick = () => sor(q); $('sorular').appendChild(b);
+  });
+  const benim = S.gecmis.filter(g => g.k === S.sira);
+  $('gecmis').innerHTML = '';
+  benim.slice().reverse().forEach(g => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="m"></span><span class="' + (g.cevap ? 'e' : 'h') + '">' + (g.tahmin ? (g.cevap ? 'DOĞRU' : 'YANLIŞ') : (g.cevap ? 'EVET' : 'HAYIR')) + '</span>';
+    li.querySelector('.m').textContent = g.metin;
+    $('gecmis').appendChild(li);
+  });
+  $('gecmisBos').style.display = benim.length ? 'none' : 'block';
+}
+
+/* =============================================================
+   Soru / tahmin (insan)
+============================================================= */
+function sirayiDegistir() {
+  S.sira = 1 - S.sira; S.kalan = TUR_SORU;
+  if (S.tek && S.sira === 1 && pcTukendi()) S.sira = 0; // bilgisayarın hakkı bittiyse sıra insanda kalır
+  karistirSorular();
+  if (S.tek && S.sira === 1) return tekSonraki();
+  kaydet(); yenile();
+}
+function sor(q) {
+  if (!S.lig || S.faz !== 'oyun' || S.kalan <= 0) return;
+  S.gecmis.push({ q: q.id, metin: q.metin, cevap: !!q.f(Y[arananIdx()]), k: S.sira });
+  S.kalan--;
+  if (S.kalan <= 0) return sirayiDegistir();
+  S.gosterilen = S.gosterilen.filter(id => id !== q.id);
+  if (S.gosterilen.length < 6) karistirSorular();
+  kaydet(); yenile();
+}
+function tahmin(idx) {
+  if (!S.lig || S.faz !== 'oyun') return;
+  if (idx === arananIdx()) return turBitir(S.sira);
+  S.gecmis.push({ q: null, tahmin: true, metin: 'Tahmin: ' + Y[idx].ad, cevap: false, k: S.sira });
+  sirayiDegistir();
+}
+$('karistir').onclick = () => { karistirSorular(); kaydet(); ciz(); };
+$('turPas').onclick = () => { if (S.lig && S.faz === 'oyun' && confirm('Kimse bulamadı, bu tur pas geçilsin mi?')) turBitir(-1); };
+
+oneriBagla($('tahminAra'), $('tahminOneri'), idx => {
+  $('tahminAra').value = '';
+  if (confirm(S.adlar[S.sira] + ' tahmini: ' + Y[idx].ad + '\nEmin misin?')) tahmin(idx);
+});
+function oneriBagla(girdi, kutu, secilince) {
+  girdi.addEventListener('input', () => {
+    const q = norm(girdi.value.trim()); kutu.innerHTML = '';
+    if (q.length < 2) return;
+    let n = 0;
+    for (let i = 0; i < Y.length && n < 6; i++) {
+      if (S && S.lig && !Y[i].ul.includes(S.lig)) continue;
+      if (!norm(Y[i].ad).includes(q)) continue; n++;
+      const b = document.createElement('button');
+      b.innerHTML = kaçış(Y[i].ad) + ' <small>' + kaçış(Y[i].uy) + ' • ' + Y[i].dg + '</small>';
+      b.onclick = () => { kutu.innerHTML = ''; secilince(i); };
+      kutu.appendChild(b);
+    }
+  });
+}
+
+/* =============================================================
+   Futbolcu saklama penceresi (her oyuncu kendi futbolcusunu yazıp SAKLA'ya basar)
+============================================================= */
+let saklaSecilen = null;
+function saklaGuncelle() {
+  const sc = saklaSecilen != null ? Y[saklaSecilen] : null;
+  $('saklaSecili').innerHTML = sc ? '✅ <b style="color:var(--yazi)">' + kaçış(sc.ad) + '</b> • ' + kaçış(sc.uy) + ' • ' + MEVKI[sc.mv] : 'Listeden bir futbolcu seçmelisin.';
+  $('saklaBtn').disabled = !sc;
+}
+function saklaPenceresi() {
+  const sk = S.saklaSira;
+  $('saklaBaslik').textContent = '🔒 ' + S.adlar[sk] + ', futbolcunu seç';
+  $('saklaAlt').textContent = (S.tek ? 'Bilgisayar senin futbolcunu bulmaya çalışacak.' : S.adlar[1 - sk] + ' ekrana bakmasın!') + ' Lig: ' + ligAd(S.lig);
+  saklaSecilen = null; $('saklaAd').value = ''; $('saklaOneri').innerHTML = ''; saklaGuncelle(); $('saklaPerde').classList.add('acik');
+}
+oneriBagla($('saklaAd'), $('saklaOneri'), idx => { saklaSecilen = idx; $('saklaAd').value = Y[idx].ad; saklaGuncelle(); });
+$('saklaAd').addEventListener('input', () => { saklaSecilen = null; saklaGuncelle(); });
+$('saklaBtn').onclick = () => {
+  if (saklaSecilen == null || !S) return;
+  S.gizliler[S.saklaSira] = saklaSecilen; S.kullanilan.push(saklaSecilen); saklaSecilen = null; $('saklaAd').value = ''; $('saklaOneri').innerHTML = '';
+  if (!S.tek && S.saklaSira === 0) { S.saklaSira = 1; kaydet(); return saklaPenceresi(); }
+  $('saklaPerde').classList.remove('acik'); oyunuBaslat();
+};
+
+/* =============================================================
+   Tek kişilik mod, bilgisayarın sırası: bilgisayar soru sorar, oyuncu evet/hayır der.
+   Oyuncu yanlış cevap veremez: saklı futbolcu bilindiği için cevaplar kontrol edilir.
+============================================================= */
+const pcTukendi = () => !S.t || !S.t.adaylar.length;
+// Kalan adayları en çok eleyen (yaklaşık yarı yarıya bölen) soruyu seçer. Doğum yılı gibi oyuncunun bilemeyeceği sorular sorulmaz.
+function tekSoruSec() {
+  const n = S.t.adaylar.length, P = S.t.adaylar.map(i => Y[i]), sorulan = new Set(S.t.gecmis.map(g => g.metin).concat(S.t.atlanan || [])), liste = [];
+  const ekle = (metin, f, bel) => { if (sorulan.has(metin)) return; const e = P.filter(f).length; if (!e || e === n) return; const ey = bel ? P.filter(p => f(p) || bel(p)).length : e, eh = bel ? P.filter(p => !f(p) || bel(p)).length : n - e, oran = 1 - Math.max(ey, eh) / n; if (oran <= 0) return; liste.push({ metin, f, bel, oran }); };
+  SORULAR.filter(s => !s.zor).forEach(s => ekle(s.metin, s.f, s.bel));
+  const kul = {}; P.forEach(p => p.kl.forEach(k => kul[k] = 1));
+  Object.keys(kul).forEach(k => ekle(k + ' formasını giydi mi?', p => p.kl.includes(k)));
+  let en = liste.reduce((m, q) => Math.max(m, q.oran), 0);
+  if (en < .15) {
+    const ilk = {}; P.forEach(p => ilk[p.ad[0]] = 1);
+    Object.keys(ilk).forEach(l => ekle('Adı ' + l + ' harfiyle mi başlıyor?', p => p.ad[0] === l));
+    en = liste.reduce((m, q) => Math.max(m, q.oran), 0);
+  }
+  if (!liste.length) return null;
+  // Bazen en iyi soru yerine "idare eder" bir soru seçer, böylece insan oyuncuyla başa baş gider
+  const tol = rastgele(100) < PC_HATA ? en * .5 : en - .08;
+  const iyi = liste.filter(q => q.oran >= tol);
+  return iyi[rastgele(iyi.length)];
+}
+function tekSonraki() {
+  const t = S.t, n = t.adaylar.length;
+  if (!n) { t.bekleyen = null; S.sira = 0; S.kalan = TUR_SORU; karistirSorular(); kaydet(); return yenile(); }
+  const q = n > 2 ? tekSoruSec() : null;
+  t.bekleyen = q ? { tip: 'soru', metin: q.metin, f: q.f, bel: q.bel } : { tip: 'tahmin', idx: t.adaylar[rastgele(n)] };
+  kaydet(); yenile();
+}
+function tekCevap(c) {
+  const t = S && S.t, b = t && t.bekleyen; if (!b || S.faz !== 'oyun' || S.sira !== 1) return;
+  const gizli = S.gizliler[0], kayit = b.tip === 'tahmin' ? b.idx === gizli : !!b.f(Y[gizli]), evet = c === 'e';
+  // Veri bu futbolcu için kesin değilse (ör. orta saha/forvet arası) iki cevap da kabul edilir
+  if (evet !== kayit && !(b.bel && b.bel(Y[gizli]))) { t.uyari = 'Kayıtlarımıza göre cevap ' + (kayit ? 'EVET' : 'HAYIR') + '. Kayıt yanlışsa (veriler otomatik toplandı) "Bu soruyu atla"ya bas.'; return tekCiz(); }
+  t.uyari = ''; const dogru = evet;
+  if (b.tip === 'tahmin') {
+    t.gecmis.push({ metin: 'Tahmin: ' + Y[b.idx].ad, cevap: dogru });
+    if (dogru) return turBitir(1);
+    t.adaylar = t.adaylar.filter(i => i !== b.idx); t.bekleyen = null;
+    return sirayiDegistir(); // yanlış tahmin turu bitirir
+  }
+  t.gecmis.push({ metin: b.metin, cevap: dogru });
+  t.adaylar = t.adaylar.filter(i => !!b.f(Y[i]) === dogru || (b.bel && b.bel(Y[i]))); t.bekleyen = null;
+  S.kalan--;
+  if (S.kalan <= 0) return sirayiDegistir();
+  tekSonraki();
+}
+function tekAtla() {
+  const t = S && S.t, b = t && t.bekleyen; if (!b || b.tip !== 'soru' || t.atla >= TEK_ATLA) return;
+  t.atla++; (t.atlanan = t.atlanan || []).push(b.metin); t.uyari = ''; t.bekleyen = null; tekSonraki();
+}
+function tekCiz() {
+  const t = S.t, b = t && t.bekleyen;
+  $('stadyum').style.setProperty('--hue', (S.bulunan * 47 % 360) + 'deg');
+  $('ligTon').style.setProperty('--ton', ligRenk(S.lig) || 'transparent'); $('ligTon').style.opacity = S.lig ? .38 : 0;
+  $('tekSkor').innerHTML = [0, 1].map(i => '<div class="oyuncuKutu' + (S.sira === i ? ' aktif' : '') + '"><div class="ad">' + topHtml(S.toplar[i], 30) + '<span>' + (i ? '🤖 ' : '') + kaçış(S.adlar[i]) + '</span></div><div class="puan">' + S.puan[i] + ' <small>/ ' + S.hedef + '</small></div><div class="cubuk"><i style="width:' + Math.min(100, S.puan[i] / S.hedef * 100) + '%"></i></div></div>').join('');
+  $('tekLig').textContent = ligAd(S.lig); $('tekTur').textContent = S.tur;
+  $('tekKalan').textContent = S.kalan; $('tekHakSat').textContent = S.adlar[0] + ' adlı oyuncunun saklı futbolcusunu arıyor';
+  $('tekCevap').style.display = b ? 'block' : 'none';
+  if (b) {
+    $('tekBalon').innerHTML = b.tip === 'soru' ? '<small>Soru ' + (t.gecmis.length + 1) + ' • senin futbolcun için</small>' + kaçış(b.metin) :
+      '<small>Tahminim (' + (t.gecmis.length + 1) + '. soru)</small>Futbolcun <u>' + kaçış(Y[b.idx].ad) + '</u> mu?<small style="margin:4px 0 0">' + kaçış(Y[b.idx].uy) + ' • ' + MEVKI[Y[b.idx].mv] + '</small>';
+    if (t.uyari) $('tekBalon').innerHTML += '<small style="margin:8px 0 0;color:#a32;font-weight:700">' + kaçış(t.uyari) + '</small>';
+    $('tekAtla').style.display = b.tip === 'soru' ? '' : 'none'; $('tekAtla').disabled = t.atla >= TEK_ATLA; $('tekAtla').textContent = 'Bu soruyu atla (' + (TEK_ATLA - t.atla) + ')';
+    $('tekAday').textContent = 'Aklımdaki aday sayısı: ' + t.adaylar.length;
+  }
+  $('tekGecmis').innerHTML = '';
+  (t ? t.gecmis.slice().reverse() : []).forEach(g => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="m"></span><span class="' + (g.cevap ? 'e' : 'h') + '">' + (g.cevap ? 'EVET' : 'HAYIR') + '</span>';
+    li.querySelector('.m').textContent = g.metin; $('tekGecmis').appendChild(li);
+  });
+  $('tekGecmisBos').style.display = t && t.gecmis.length ? 'none' : 'block';
+}
+$('tekE').onclick = () => tekCevap('e');
+$('tekH').onclick = () => tekCevap('h');
+$('tekAtla').onclick = tekAtla;
+$('tekMenu').onclick = () => { kaydet(); menuAc(); };
+
+/* =============================================================
+   Tur sonu, maç sonu
+============================================================= */
+function turBitir(kazanan) {
+  const puan = kazanan >= 0 ? BULMA_PUANI : 0;
+  if (kazanan >= 0) { S.puan[kazanan] += puan; S.bulunan++; }
+  const bitti = kazanan >= 0 && S.puan[kazanan] >= S.hedef;
+  const gizliSatir = i => { const p = Y[S.gizliler[i]]; return '<div style="margin:6px 0"><span class="soluk">' + (S.tek && i ? '🤖 ' : '') + kaçış(S.adlar[i]) + ' adlı oyuncunun futbolcusu</span><div class="buyuk" style="margin:2px 0">' + kaçış(p ? p.ad : '-') + '</div></div>'; };
+  $('turKutu').innerHTML =
+    '<div class="buyuk" style="color:' + (kazanan >= 0 ? (S.tek && kazanan === 1 ? 'var(--kirmizi)' : 'var(--cim)') : 'var(--kirmizi)') + '">' + (kazanan >= 0 ? (S.tek && kazanan === 1 ? '🤖 Bilgisayar buldu! +' + puan : '🎉 ' + kaçış(S.adlar[kazanan]) + ' buldu! +' + puan) : '😔 Kimse bulamadı') + '</div>' +
+    '<div class="soluk">' + kaçış(ligAd(S.lig)) + '</div>' + gizliSatir(0) + gizliSatir(1) +
+    '<div class="skorlar" style="margin:10px 0">' + [0, 1].map(i => '<div class="oyuncuKutu"><div class="ad">' + topHtml(S.toplar[i], 24) + '<span>' + kaçış(S.adlar[i]) + '</span></div><div class="puan">' + S.puan[i] + '</div></div>').join('') + '</div>' +
+    '<button class="btn genis" id="turDevam">' + (bitti ? 'Sonuca git' : 'Sonraki tur') + '</button>';
+  $('turPerde').classList.add('acik');
+  if (kazanan >= 0 && !(S.tek && kazanan === 1)) patlat(bitti ? 0 : 60);
+  if (kazanan >= 0) borazan(false);
+  $('turDevam').onclick = () => {
+    $('turPerde').classList.remove('acik');
+    if (bitti) return macBitir(kazanan);
+    S.tur++; turBaslat();
+  };
+  S.gizliAcik = true; S.faz = 'bitti';
+  kaydet();
+}
+
+function macBitir(k) {
+  titre(true);
+  S.bitti = true;
+  const kayit = { tarih: Date.now(), adlar: S.adlar.slice(), puan: S.puan.slice(), kazanan: k, tur: S.tur, toplar: S.toplar, hedef: S.hedef, stad: S.stad, tek: !!S.tek };
+  const g = depo.oku('ft_gecmis', []); g.unshift(kayit); depo.yaz('ft_gecmis', g.slice(0, 200));
+  depo.sil('ft_durum');
+  $('macKutu').innerHTML =
+    '<div class="kupa">🏆</div><div class="buyuk" style="color:var(--sari);font-size:32px">' + kaçış(S.adlar[k]) + ' kazandı!</div>' +
+    '<div class="soluk">' + S.tur + ' turda ' + S.hedef + ' puana ulaştı</div>' +
+    '<div class="skorlar" style="margin:12px 0">' + [0, 1].map(i => '<div class="oyuncuKutu' + (i === k ? ' aktif' : '') + '"><div class="ad">' + topHtml(S.toplar[i], 28) + '<span>' + kaçış(S.adlar[i]) + '</span></div><div class="puan">' + S.puan[i] + '</div></div>').join('') + '</div>' +
+    '<div class="sag"><button class="btn" id="resimKaydet">📷 Skor tablosunu kaydet (PNG)</button></div>' +
+    '<div class="sag"><button class="btn ikinci" id="macYeni">Yeni maç</button><button class="btn ikinci" id="macKayit">🏆 Tüm kayıtlar</button></div>';
+  $('macPerde').classList.add('acik');
+  patlat(260, true); borazan(true);
+  $('resimKaydet').onclick = () => skorResmi(kayit);
+  $('macYeni').onclick = () => { $('macPerde').classList.remove('acik'); durdurKonfeti(); S = null; menuAc(); };
+  $('macKayit').onclick = () => { $('macPerde').classList.remove('acik'); durdurKonfeti(); S = null; kayitlarAc(); };
+  document.documentElement.style.setProperty('--hue', '0deg');
+}
+
+/* =============================================================
+   Skor tablosu resmi (PNG)
+============================================================= */
+function skorResmi(k) {
+  const W = 900, H = 520, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#07182a'); g.addColorStop(.6, '#0f3a5c'); g.addColorStop(1, '#176b3a');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgba(255,255,255,.07)'; for (let i = 0; i < 6; i++) x.fillRect(0, 300 + i * 40, W, 20);
+  x.textAlign = 'center'; x.fillStyle = '#ffd43b'; x.font = 'bold 44px Segoe UI, sans-serif'; x.fillText('⚽ FUTBOLCU TAHMİN', W / 2, 70);
+  x.fillStyle = '#cfe3f2'; x.font = '22px Segoe UI, sans-serif'; x.fillText(new Date(k.tarih).toLocaleString('tr-TR') + '  •  ' + k.tur + ' tur  •  hedef ' + (k.hedef || 500), W / 2, 108);
+  const yukle = i => new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(topSVG(k.toplar[i], 120)); });
+  Promise.all([yukle(0), yukle(1)]).then(im => {
+    [0, 1].forEach(i => {
+      const cx = i ? W * .75 : W * .25, kazandi = i === k.kazanan;
+      x.fillStyle = kazandi ? 'rgba(255,212,59,.22)' : 'rgba(255,255,255,.1)';
+      x.beginPath(); x.roundRect(cx - 190, 140, 380, 320, 24); x.fill();
+      if (kazandi) { x.strokeStyle = '#ffd43b'; x.lineWidth = 4; x.stroke(); }
+      if (im[i]) x.drawImage(im[i], cx - 45, 160, 90, 90);
+      x.fillStyle = '#fff'; x.font = 'bold 34px Segoe UI, sans-serif'; x.fillText(k.adlar[i].slice(0, 14), cx, 292);
+      x.fillStyle = '#ffd43b'; x.font = 'bold 84px Segoe UI, sans-serif'; x.fillText(String(k.puan[i]), cx, 380);
+      x.fillStyle = '#cfe3f2'; x.font = '22px Segoe UI, sans-serif'; x.fillText(kazandi ? '🏆 ŞAMPİYON' : 'puan', cx, 425);
+    });
+    resmiKaydet(c.toDataURL('image/png'), 'skor-tablosu-' + new Date(k.tarih).toISOString().slice(0, 10) + '.png');
+  });
+}
+
+/* =============================================================
+   Kayıtlar
+============================================================= */
+function kayitlarAc() {
+  const g = depo.oku('ft_gecmis', []);
+  const say = {};
+  g.forEach(m => { const ad = m.adlar[m.kazanan]; say[ad] = (say[ad] || { g: 0, o: 0 }); say[ad].g++; });
+  g.forEach(m => m.adlar.forEach(ad => { say[ad] = say[ad] || { g: 0, o: 0 }; say[ad].o++; }));
+  const satirlar = Object.entries(say).sort((a, b) => b[1].g - a[1].g || a[1].o - b[1].o);
+  $('sampiyon').innerHTML = satirlar.length ? '<table><tr><th>Oyuncu</th><th>Galibiyet</th><th>Maç</th></tr>' + satirlar.map(([a, v]) => '<tr><td>' + kaçış(a) + '</td><td>' + v.g + '</td><td>' + v.o + '</td></tr>').join('') + '</table>' : '<p class="soluk" style="margin:0">Henüz tamamlanmış maç yok.</p>';
+  $('kayitListe').innerHTML = g.length ? g.map(m => '<div class="kayit"><span>' + new Date(m.tarih).toLocaleDateString('tr-TR') + ' • ' + m.tur + ' tur • hedef ' + (m.hedef || 500) + (m.stad ? ' • ' + stadAd(m.stad) : '') + '</span><span class="sk">' + kaçış(m.adlar[0]) + ' ' + m.puan[0] + ' – ' + m.puan[1] + ' ' + kaçış(m.adlar[1]) + '</span><span>🏆 ' + kaçış(m.adlar[m.kazanan]) + '</span></div>').join('') : '<p class="soluk" style="margin:0">Kayıt yok.</p>';
+  goster('kayitlar');
+}
+$('kayitlarAc').onclick = kayitlarAc;
+$('kayitGeri').onclick = () => menuAc();
+$('kayitTemizle').onclick = () => { if (confirm('Tüm maç kayıtları silinsin mi?')) { depo.sil('ft_gecmis'); kayitlarAc(); } };
+
+/* =============================================================
+   Menü ve devam
+============================================================= */
+function menuAc() {
+  document.documentElement.style.setProperty('--hue', '0deg'); $('stadyum').style.setProperty('--hue', '0deg');
+  const d = depo.oku('ft_durum', null);
+  $('devam').style.display = d && !d.bitti && d.gizliler ? 'block' : 'none';
+  $('ligTon').style.opacity = 0;
+  stadUygula(null); $('pasSahne').innerHTML = pasSahne(); bilgiCiz();
+  goster('ana');
+}
+$('basla').onclick = () => {
+  if (depo.oku('ft_durum', null) && !confirm('Yarım kalan maç silinecek, yeni maç başlasın mı?')) return;
+  yeniMac();
+};
+$('devam').onclick = () => {
+  S = depo.oku('ft_durum', null); if (!S || !S.gizliler) { depo.sil('ft_durum'); S = null; return; }
+  stadUygula(S.stad || null);
+  if (S.gizliAcik) { S.tur++; return turBaslat(); } // tur sonu penceresi kapandıysa yeni turu başlat
+  if (S.lig) { kurSorular(S.lig); if (!S.gosterilen || !S.gosterilen.length) karistirSorular(); }
+  if (S.t) S.t.bekleyen = null;
+  if (S.faz === 'lig' || !S.lig) { S.faz = 'lig'; yenile(); return ligPenceresi(); }
+  if (S.faz === 'sakla') { yenile(); return saklaPenceresi(); }
+  if (S.tek && S.sira === 1) return tekSonraki();
+  yenile();
+};
+$('menuDon').onclick = () => { kaydet(); menuAc(); };
+addEventListener('popstate', () => {
+  const e = document.body.dataset.ekran;
+  if (!e || e === 'ana') return;
+  const acik = [...document.querySelectorAll('#hikayePerde.acik, #kuralPerde.acik')];
+  if (acik.length) { acik.forEach(p => p.classList.remove('acik')); try { history.pushState({ ic: 1 }, ''); } catch (x) {} return; }
+  if (e === 'kurulum' && adim > 1) { adimGoster(adim - 1); try { history.pushState({ ic: 1 }, ''); } catch (x) {} return; }
+  ['ligPerde', 'saklaPerde', 'turPerde', 'macPerde'].forEach(i => $(i).classList.remove('acik'));
+  durdurKonfeti(); if (S && !S.bitti) kaydet(); menuAc();
+});
+$('stadyum').style.setProperty('--hue', '0deg');
+menuAc();
+
+/* =============================================================
+   Kutlama: konfeti + borazan
+============================================================= */
+const kc = $('konfeti'), kx = kc.getContext('2d');
+let parcalar = [], konfetiCalisiyor = false, konfetiSurekli = false;
+function boyutla() { kc.width = innerWidth; kc.height = innerHeight; }
+addEventListener('resize', boyutla); boyutla();
+function patlat(n, surekli) {
+  const renk = ['#ffd43b', '#ff5c5c', '#2ecc71', '#3d8bff', '#ff9ad5', '#ffffff'];
+  for (let i = 0; i < n; i++) parcalar.push({ x: Math.random() * kc.width, y: -20 - Math.random() * kc.height * .6, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 4, r: 4 + Math.random() * 6, a: Math.random() * 6, va: (Math.random() - .5) * .3, c: renk[rastgele(renk.length)], top: Math.random() < .08 });
+  konfetiSurekli = !!surekli; kc.style.display = 'block';
+  if (!konfetiCalisiyor) { konfetiCalisiyor = true; requestAnimationFrame(konfetiAdim); }
+}
+function konfetiAdim() {
+  kx.clearRect(0, 0, kc.width, kc.height);
+  parcalar.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.a += p.va; kx.save(); kx.translate(p.x, p.y); kx.rotate(p.a);
+    if (p.top) { kx.font = (p.r * 3) + 'px serif'; kx.fillText('⚽', 0, 0); } else { kx.fillStyle = p.c; kx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 1.6); }
+    kx.restore();
+    if (p.y > kc.height + 20) { if (konfetiSurekli) { p.y = -20; p.x = Math.random() * kc.width; } else p.dead = true; }
+  });
+  parcalar = parcalar.filter(p => !p.dead);
+  if (parcalar.length) requestAnimationFrame(konfetiAdim); else { konfetiCalisiyor = false; kx.clearRect(0, 0, kc.width, kc.height); kc.style.display = 'none'; }
+}
+function durdurKonfeti() { konfetiSurekli = false; parcalar = []; }
+let ses = null;
+function borazan(buyuk) {
+  try {
+    ses = ses || new (window.AudioContext || window.webkitAudioContext)();
+    const notalar = buyuk ? [523, 659, 784, 1047, 784, 1047, 1319] : [659, 880, 1175];
+    notalar.forEach((f, i) => {
+      const o = ses.createOscillator(), g = ses.createGain(), t = ses.currentTime + i * .16;
+      o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(.18, t); g.gain.exponentialRampToValueAtTime(.001, t + .3);
+      o.connect(g); g.connect(ses.destination); o.start(t); o.stop(t + .32);
+    });
+  } catch (e) {}
+}
+
+/* =============================================================
+   Mobil uygulama (Capacitor) köprüsü: titreşim, paylaşma, geri tuşu. Tarayıcıda sessizce atlanır.
+============================================================= */
+const CAP = window.Capacitor, kapP = n => CAP && CAP.Plugins && CAP.Plugins[n];
+const yerelMi = () => !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
+function titre(sert) {
+  try { const p = kapP('Haptics'); if (p) p.impact({ style: sert ? 'HEAVY' : 'LIGHT' }); else if (navigator.vibrate) navigator.vibrate(sert ? 40 : 10); } catch (e) {}
+}
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button')) titre(false); });
+function resmiKaydet(dataUrl, ad) {
+  const fs = kapP('Filesystem'), sh = kapP('Share');
+  if (yerelMi() && fs && sh) {
+    fs.writeFile({ path: ad, data: dataUrl.split(',')[1], directory: 'CACHE' }).then(r => sh.share({ title: 'Kim Bu Futbolcu? skor tablosu', url: r.uri })).catch(() => {});
+    return;
+  }
+  const a = document.createElement('a'); a.download = ad; a.href = dataUrl; a.click();
+}
+(function () {
+  const uyg = kapP('App'); if (!uyg || !uyg.addListener) return;
+  uyg.addListener('backButton', () => {
+    const acik = [...document.querySelectorAll('.perde.acik')].filter(p => p.id === 'hikayePerde' || p.id === 'kuralPerde').pop();
+    if (acik) return acik.classList.remove('acik');
+    const e = document.body.dataset.ekran;
+    if (e === 'ana') return uyg.exitApp();
+    ['ligPerde', 'saklaPerde', 'turPerde', 'macPerde'].forEach(i => $(i).classList.remove('acik'));
+    durdurKonfeti(); if (S && !S.bitti) kaydet(); menuAc();
+  });
+})();
+</script>
+</body>
+</html>
