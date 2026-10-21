@@ -740,7 +740,13 @@ $('zarfAc').onclick = () => $('hikayePerde').classList.add('acik');
 $('hikayeKapat').onclick = () => $('hikayePerde').classList.remove('acik');
 $('hikayePerde').onclick = e => { if (e.target === $('hikayePerde')) $('hikayePerde').classList.remove('acik'); };
 $('kuralAc').onclick = () => $('kuralPerde').classList.add('acik');
-$('fikirAc').onclick = () => { location.href = 'mailto:furkanoruc.bussinnes@gmail.com?subject=' + encodeURIComponent('Kim Bu Futbolcu? geri bildirim') + '&body=' + encodeURIComponent('Merhaba, oyunla ilgili düşüncelerim:\n\n\n\n(Cihaz: ' + navigator.userAgent.slice(0, 120) + ')'); };
+$('fikirAc').onclick = () => {
+  const adres = 'furkanoruc.bussinnes@gmail.com', konu = 'Kim Bu Futbolcu? geri bildirim', metin = 'Merhaba, oyunla ilgili düşüncelerim:\n\n\n\n(Cihaz: ' + navigator.userAgent.slice(0, 120) + ')';
+  const mobil = yerelMi() || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+  // Telefonda e-posta uygulaması açılır; bilgisayarda çoğu kişinin e-posta uygulaması olmadığı için Gmail'in yazma sayfası yeni sekmede açılır
+  if (mobil) location.href = 'mailto:' + adres + '?subject=' + encodeURIComponent(konu) + '&body=' + encodeURIComponent(metin);
+  else window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + adres + '&su=' + encodeURIComponent(konu) + '&body=' + encodeURIComponent(metin), '_blank');
+};
 $('kuralKapat').onclick = () => $('kuralPerde').classList.remove('acik');
 
 /* =============================================================
