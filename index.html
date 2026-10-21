@@ -453,7 +453,7 @@
       <div class="deger">Tur <span id="turNo">1</span> • <span id="ligEtiket"></span> • Bulursan: <b>+10</b></div>
     </div>
     <div class="kart jokerKart" id="jokerKart" style="display:none">
-      <h2>🃏 Jokerler <small class="soluk" style="font-weight:400">(her maçta birer kez)</small></h2>
+      <h2>🃏 Jokerler <small class="soluk" style="font-weight:400">(her turda yenilenir, sorduğun hoca bir daha sorulamaz)</small></h2>
       <div class="jokerler">
         <button class="joker" id="jkHoca"><span>🎓</span><b>Hocaya Sor</b><small>Efsane teknik direktör fikir verir</small></button>
         <button class="joker" id="jkIpucu"><span>💡</span><b>İpucu</b><small>Futbolcu hakkında bilgi</small></button>
@@ -540,13 +540,13 @@
   <p class="soluk" style="margin:0 0 8px;font-size:14px"><b>Amaç:</b> Rakibinin gizlediği futbolcuyu, ona en az soru sorarak <b>ilk sen bul</b>. İlk bulan tur puanını alır, hedef puana ilk ulaşan maçı kazanır.</p>
   <ol class="kural">
     <li><b>Mod seç.</b> <i>PC ile Oyna</i>: bilgisayara karşı oynarsın. <i>İki Kişilik Oyna</i>: iki arkadaş aynı telefonu sırayla kullanır.</li>
-    <li><b>Maçı kur.</b> Takma adını yaz, topunu seç, kaç puana oynayacağınızı ve stadyumu seç (100 puan kısa, 900 puan çok uzun maçtır).</li>
+    <li><b>Maçı kur.</b> Takma adını yaz, topunu seç, kaç puana oynayacağınızı ve stadyumu seç (Hızlı Maç 1 futbolcu bulana kadar, Efsane 10 futbolcu bulana kadar sürer).</li>
     <li><b>Lig seçilir.</b> Her turda sırası gelen taraf bir lig seçer (Süper Lig, Premier Lig, La Liga gibi). Bütün futbolcular o ligde oynamış oyunculardır.</li>
     <li><b>Futbolcunu sakla.</b> Gizli bir futbolcu seç: adını yaz, listeden dokun ve <b>SAKLA</b>'ya bas. Rakip ekrana bakmasın! PC ile oynarken bilgisayar da kendi futbolcusunu saklar.</li>
     <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
     <li><b>Tahmin et.</b> Aklına gelen futbolcuyu "Tahmin" kutusuna yaz. Doğruysa <b>10 puan</b> senin ve tur biter. <b>Yanlış tahmin bir soru hakkı yakar ve sıran biter</b>, o yüzden emin olmadan tahmin etme.</li>
     <li><b>PC ile oynarken:</b> bilgisayar sırası gelince senin futbolcuna soru sorar. Sen sadece <b>EVET</b> ya da <b>HAYIR</b> dersin. Doğru cevabı verdiğinden oyun emin olur: yanlış basarsan uyarır. Kayıt hatalıysa "Bu soruyu atla"ya veya aynı cevaba bir kez daha basarak devam edebilirsin.</li>
-    <li><b>Jokerler (sadece PC ile oynarken):</b> Her maçta birer kez kullanabileceğin 3 joker var. 🎓 <b>Hocaya Sor</b>: Zidane, Mourinho, Ancelotti gibi 10 efsane hocadan birini seç, saklı futbolcu hakkında bir şey söyler (ama yüzde kaç emin olduğuna dikkat, yanılabilir!). 💡 <b>İpucu</b>: futbolcunun adı, soyadı, doğum yılı veya kulübü hakkında bir bilgi verir. 🧠 <b>Akıllı Soru</b>: oyun adayları en çok eleyen soruyu senin yerine sorar ve soru hakkından düşmez.</li>
+    <li><b>Jokerler (sadece PC ile oynarken):</b> Her turun başında yenilenen 3 jokerin var (turda her jokeri bir kez kullanabilirsin). 🎓 <b>Hocaya Sor</b>: Zidane, Mourinho, Ancelotti gibi 10 efsane hocadan birini seç (sorduğun hoca maç boyunca bir daha sorulamaz, sıradaki turlarda diğerlerine sorarsın), saklı futbolcu hakkında bir şey söyler (ama yüzde kaç emin olduğuna dikkat, yanılabilir!). 💡 <b>İpucu</b>: futbolcunun adı, soyadı, doğum yılı veya kulübü hakkında bir bilgi verir. 🧠 <b>Akıllı Soru</b>: oyun adayları en çok eleyen soruyu senin yerine sorar ve soru hakkından düşmez.</li>
     <li><b>Kimse bulamazsa</b> "Bu turu pas geç" diyerek yeni tura geçebilirsiniz.</li>
     <li><b>Kazanan:</b> Hedef puana ilk ulaşan maçı alır. Sonunda skor tablosunu resim olarak kaydedip arkadaşlarına gönderebilirsin.</li>
   </ol>
@@ -581,7 +581,7 @@
 ============================================================= */
 let tekMod = false;
 const UNLU_ORAN = .25, PC_HATA = 70, TEK_ATLA = 5, BILG_TOP = { renk: 6, stil: 'yildiz' };
-const BULMA_PUANI = 10, TUR_SORU = 5, TUR_SINIRI = 99999, EKRAN_SORU = 12, HEDEFLER = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+const BULMA_PUANI = 10, TUR_SORU = 5, TUR_SINIRI = 99999, EKRAN_SORU = 12, HEDEFLER = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 const LIGLER = [
   { k: 'tr', ad: 'Trendyol Süper Lig', c: '#e63946' }, { k: 'en', ad: 'İngiltere Premier Lig', c: '#9b5de5' }, { k: 'es', ad: 'İspanya La Liga', c: '#ff8c1a' },
   { k: 'it', ad: 'İtalya Serie A', c: '#2f80ed' }, { k: 'de', ad: 'Almanya Bundesliga', c: '#2ecc71' }, { k: 'fr', ad: 'Fransa Ligue 1', c: '#ff4fa0' }
@@ -664,10 +664,10 @@ function ayarCiz(i) {
 }
 ayarCiz(0); ayarCiz(1);
 
-let hedef = +depo.oku('ft_hedef', 300); if (!HEDEFLER.includes(hedef)) hedef = 300;
-const HEDEF_AD = { 100: 'Hızlı Maç', 200: 'Kısa Maç', 300: 'Klasik', 400: 'Uzun Maç', 500: 'Maraton', 600: 'Zorlu', 700: 'Usta', 800: 'Şampiyon', 900: 'Efsane' };
+let hedef = +depo.oku('ft_hedef', 30); if (!HEDEFLER.includes(hedef)) hedef = 30;
+const HEDEF_AD = { 10: 'Hızlı Maç', 20: 'Kısa Maç', 30: 'Klasik', 40: 'Uzun Maç', 50: 'Maraton', 60: 'Zorlu', 70: 'Usta', 80: 'Şampiyon', 90: 'Kaptan', 100: 'Efsane' };
 function hedefCiz() {
-  $('hedefSec').innerHTML = HEDEFLER.map(x => '<button data-h="' + x + '" class="' + (x === hedef ? 'secili' : '') + '"><span class="kupalar">' + '🏆'.repeat(x / 100 <= 3 ? 1 : x / 100 <= 6 ? 2 : 3) + '</span><b>' + x + '</b><span class="ad">' + HEDEF_AD[x] + '</span><small>' + (x / BULMA_PUANI) + ' futbolcu</small></button>').join('');
+  $('hedefSec').innerHTML = HEDEFLER.map(x => '<button data-h="' + x + '" class="' + (x === hedef ? 'secili' : '') + '"><span class="kupalar">' + '🏆'.repeat(x / 10 <= 3 ? 1 : x / 10 <= 6 ? 2 : 3) + '</span><b>' + x + '</b><span class="ad">' + HEDEF_AD[x] + '</span><small>' + (x / BULMA_PUANI) + ' futbolcu</small></button>').join('');
   $('hedefSec').querySelectorAll('[data-h]').forEach(b => b.onclick = () => { hedef = +b.dataset.h; hedefCiz(); });
 }
 /* ---------- Ana ekran: pas veren iki forma ve oyun bilgisi ---------- */
@@ -841,7 +841,7 @@ function yeniMac() {
   let a = ad(0), b = tekMod ? 'Bilgisayar' : ad(1);
   if (!tekMod && norm(a) === norm(b)) b += ' 2';
   if (tekMod && norm(a) === 'bilgisayar') a += ' 2';
-  S = { adlar: [a, b], toplar: tekMod ? [{ renk: kurulum[0].renk, stil: kurulum[0].stil }, BILG_TOP] : kurulum.map(k => ({ renk: k.renk, stil: k.stil })), tek: tekMod, stad: stad, hedef: hedef, puan: [0, 0], tur: 1, lig: null, bulunan: 0, kullanilan: [], jk: {}, jkNot: [], gizliler: [-1, -1], faz: 'lig', saklaSira: 0, gecmis: [], sira: 0, kalan: TUR_SORU, gosterilen: [], t: null, bitti: false, baslangic: Date.now() };
+  S = { adlar: [a, b], toplar: tekMod ? [{ renk: kurulum[0].renk, stil: kurulum[0].stil }, BILG_TOP] : kurulum.map(k => ({ renk: k.renk, stil: k.stil })), tek: tekMod, stad: stad, hedef: hedef, puan: [0, 0], tur: 1, lig: null, bulunan: 0, kullanilan: [], jk: {}, jkNot: [], hocaKul: [], gizliler: [-1, -1], faz: 'lig', saklaSira: 0, gecmis: [], sira: 0, kalan: TUR_SORU, gosterilen: [], t: null, bitti: false, baslangic: Date.now() };
   depo.yaz('ft_kurulum', kurulum); depo.yaz('ft_stad', stad); stadUygula(stad);
   turBaslat();
 }
@@ -853,7 +853,7 @@ function yenile() {
 }
 function turBaslat() {
   // Önce sırası gelen yarışmacı ligi seçer, sonra herkes kendi futbolcusunu saklar
-  S.lig = null; S.jkNot = []; S.gizliler = [-1, -1]; S.gecmis = []; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gosterilen = []; S.gizliAcik = false; S.faz = 'lig'; S.t = null; SORULAR = [];
+  S.lig = null; S.jk = {}; S.jkNot = []; S.gizliler = [-1, -1]; S.gecmis = []; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gosterilen = []; S.gizliAcik = false; S.faz = 'lig'; S.t = null; SORULAR = [];
   kaydet(); yenile(); ligPenceresi();
 }
 function ligPenceresi() {
@@ -1002,6 +1002,7 @@ function jokerCiz() {
   k.style.display = ''; S.jk = S.jk || {};
   const acik = S.faz === 'oyun' && S.sira === 0 && S.kalan > 0;
   [['jkHoca', 'hoca'], ['jkIpucu', 'ipucu'], ['jkAkil', 'akil']].forEach(([id, ad]) => { $(id).disabled = !!S.jk[ad] || !acik; });
+  if ((S.hocaKul || []).length >= HOCALAR.length) $('jkHoca').disabled = true; // 10 hocanın hepsi sorulduysa bu joker biter
   $('jokerNot').innerHTML = (S.jkNot || []).map(t => '<div class="jn">' + kaçış(t) + '</div>').join('');
 }
 function jokerNotEkle(metin) { S.jkNot = S.jkNot || []; S.jkNot.push(metin); kaydet(); jokerCiz(); }
@@ -1009,7 +1010,8 @@ function jokerNotEkle(metin) { S.jkNot = S.jkNot || []; S.jkNot.push(metin); kay
 const jokerHedef = () => Y[arananIdx()];
 $('jkHoca').onclick = () => {
   if (!S || (S.jk = S.jk || {}).hoca || S.faz !== 'oyun' || S.sira !== 0) return;
-  $('hocaListe').innerHTML = HOCALAR.map((h, i) => '<button data-h="' + i + '"><b>' + h.e + ' ' + h.ad + ' <span style="color:var(--sari)">%' + h.g + ' emin</span></b><small>' + h.soz + '</small></button>').join('');
+  S.hocaKul = S.hocaKul || [];
+  $('hocaListe').innerHTML = HOCALAR.map((h, i) => '<button data-h="' + i + '"' + (S.hocaKul.includes(i) ? ' disabled style="opacity:.35;text-decoration:line-through"' : '') + '><b>' + h.e + ' ' + h.ad + ' <span style="color:var(--sari)">%' + h.g + ' emin</span></b><small>' + h.soz + '</small></button>').join('');
   $('hocaListe').querySelectorAll('[data-h]').forEach(b => b.onclick = () => hocayaSor(+b.dataset.h));
   $('hocaPerde').classList.add('acik');
 };
@@ -1019,7 +1021,7 @@ function hocayaSor(i) {
   // Kesin bilinen (belirsizlik payı olmayan) sorulardan biri seçilir; hoca bazen yanılır
   const uygun = SORULAR.filter(q => !q.bel && !q.zor && !q.kulup);
   const q = uygun[rastgele(uygun.length)], gercek = !!q.f(hedef), dogru = rastgele(100) < h.g, soyler = dogru ? gercek : !gercek;
-  S.jk.hoca = 1; $('hocaPerde').classList.remove('acik');
+  S.jk.hoca = 1; (S.hocaKul = S.hocaKul || []).push(i); $('hocaPerde').classList.remove('acik');
   jokerNotEkle('🎓 ' + h.ad + ' (%' + h.g + ' emin): "' + q.metin + ' Bence ' + (soyler ? 'EVET' : 'HAYIR') + '."');
 }
 $('jkIpucu').onclick = () => {
