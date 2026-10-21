@@ -449,7 +449,7 @@
       <div class="skorlar" id="skorlar"></div>
     </div>
     <div class="kart durum">
-      <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span><br><b id="ipucuSat" style="color:var(--sari)"></b></div>
+      <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span><br><b id="ipucuSat" style="display:block;margin-top:6px;color:var(--sari);background:rgba(255,212,59,.12);border:1px solid var(--sari);border-radius:8px;padding:5px 8px"></b></div>
       <div class="deger">Tur <span id="turNo">1</span> • <span id="ligEtiket"></span> • Bulursan: <b>+10</b></div>
     </div>
     <div class="kart jokerKart" id="jokerKart" style="display:none">
@@ -567,6 +567,14 @@
   <p class="soluk" style="margin:0 0 10px;font-size:13.5px">Hoca saklı futbolcu hakkında bir bilgi söyler. Ama hocalar da yanılabilir: yüzde kaç emin olduklarını yanlarında görürsün. (Akıllı Soru ise her zaman doğruyu söyler.)</p>
   <div class="modSec" id="hocaListe"></div>
   <button class="btn ikinci genis" id="hocaKapat">Vazgeç</button>
+</div></div>
+<!-- Tur başı ipucu -->
+<div class="perde" id="ipucuPerde" style="z-index:24"><div class="pencere">
+  <div class="buyuk">🔎 Başlangıç ipucu</div>
+  <div class="soluk" id="ipucuKim"></div>
+  <div id="ipucuYazi" style="font-size:21px;font-weight:800;color:var(--sari);margin:14px 0;line-height:1.35"></div>
+  <div class="soluk" style="font-size:13px">Sorular da buna göre seçildi. İpucu oyun ekranında da yazıyor.</div>
+  <button class="btn genis" id="ipucuTamam">Tamam, başlayalım</button>
 </div></div>
 <!-- Lig seçimi -->
 <div class="perde" id="ligPerde"><div class="pencere" id="ligKutu"></div></div>
@@ -873,7 +881,14 @@ function ligSec(k) {
   }
   $('ligPerde').classList.remove('acik'); kaydet(); yenile(); saklaPenceresi();
 }
+function ipucuGoster(ara) {
+  $('ipucuKim').textContent = S.tek ? 'Bilgisayarın sakladığı futbolcu hakkında' : S.adlar[ara] + ', rakibinin sakladığı futbolcu hakkında';
+  $('ipucuYazi').textContent = ipucuMetni(Y[S.gizliler[1 - ara]]);
+  $('ipucuPerde').classList.add('acik');
+}
+$('ipucuTamam').onclick = () => $('ipucuPerde').classList.remove('acik');
 function oyunuBaslat() {
+  ipucuGoster(S.tek ? 0 : (S.tur - 1) % 2);
   S.faz = 'oyun'; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gecmis = [];
   karistirSorular(); kaydet();
   if (S.tek && S.sira === 1) return tekSonraki();
@@ -937,6 +952,7 @@ function ciz() {
   $('sira').textContent = S.adlar[S.sira];
   $('hedefSat').textContent = oyunda ? S.adlar[1 - S.sira] + ' adlı oyuncunun saklı futbolcusunu arıyor' : 'Futbolcular saklanıyor…';
   $('ipucuSat').textContent = oyunda ? '🔎 İpucu: ' + ipucuMetni(Y[arananIdx()]) : '';
+  $('ipucuSat').style.display = oyunda ? 'block' : 'none';
   $('kalanTur').textContent = S.kalan; $('turNo').textContent = S.tur; $('ligEtiket').textContent = ligAd(S.lig) || 'Lig seçiliyor';
   const dolu = !oyunda;
   $('sorular').innerHTML = '';
