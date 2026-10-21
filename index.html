@@ -104,6 +104,11 @@
   .bilgi .sayilar small { color: var(--soluk); font-size: 12px; }
   .muzikBtn { display: none; position: fixed; left: 10px; bottom: calc(6px + env(safe-area-inset-bottom)); z-index: 5; font-size: 18px; line-height: 1; padding: 6px 9px; border-radius: 12px; background: rgba(5, 15, 25, .55); }
   body[data-ekran=ana] .muzikBtn { display: block; }
+  .jokerler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .joker { background: linear-gradient(180deg, #5b2a86, #3a1a5c); border: 2px solid #c79bff; border-radius: 12px; padding: 8px 4px; text-align: center; line-height: 1.2; color: #fff; }
+  .joker span { display: block; font-size: 24px; } .joker b { display: block; font-size: 13.5px; } .joker small { display: block; font-size: 11px; opacity: .8; margin-top: 2px; }
+  .joker:disabled { opacity: .35; filter: grayscale(1); text-decoration: line-through; }
+  #jokerNot .jn { margin-top: 8px; background: rgba(199,155,255,.16); border-left: 4px solid #c79bff; border-radius: 8px; padding: 7px 10px; font-size: 14px; line-height: 1.4; }
   /* zarf + mektup */
   .zarf { display: block; margin: 16px auto 0; width: 170px; background: transparent; padding: 0; animation: salla 4s ease-in-out infinite; transform-origin: 50% 90%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.55)); }
   .zarf svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -447,6 +452,15 @@
       <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span></div>
       <div class="deger">Tur <span id="turNo">1</span> • <span id="ligEtiket"></span> • Bulursan: <b>+10</b></div>
     </div>
+    <div class="kart jokerKart" id="jokerKart" style="display:none">
+      <h2>🃏 Jokerler <small class="soluk" style="font-weight:400">(her maçta birer kez)</small></h2>
+      <div class="jokerler">
+        <button class="joker" id="jkHoca"><span>🎓</span><b>Hocaya Sor</b><small>Efsane teknik direktör fikir verir</small></button>
+        <button class="joker" id="jkIpucu"><span>💡</span><b>İpucu</b><small>Futbolcu hakkında bilgi</small></button>
+        <button class="joker" id="jkAkil"><span>🧠</span><b>Akıllı Soru</b><small>Oyun en iyi soruyu sorar</small></button>
+      </div>
+      <div id="jokerNot"></div>
+    </div>
     <div class="kart soruKart">
       <h2>Soru sor <button class="btn ikinci kucuk" id="karistir" style="float:right">🔀 Karıştır</button></h2>
       <div class="sorular" id="sorular"></div>
@@ -532,6 +546,7 @@
     <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
     <li><b>Tahmin et.</b> Aklına gelen futbolcuyu "Tahmin" kutusuna yaz. Doğruysa <b>10 puan</b> senin ve tur biter. <b>Yanlış tahmin bir soru hakkı yakar ve sıran biter</b>, o yüzden emin olmadan tahmin etme.</li>
     <li><b>PC ile oynarken:</b> bilgisayar sırası gelince senin futbolcuna soru sorar. Sen sadece <b>EVET</b> ya da <b>HAYIR</b> dersin. Doğru cevabı verdiğinden oyun emin olur: yanlış basarsan uyarır. Kayıt hatalıysa "Bu soruyu atla"ya veya aynı cevaba bir kez daha basarak devam edebilirsin.</li>
+    <li><b>Jokerler (sadece PC ile oynarken):</b> Her maçta birer kez kullanabileceğin 3 joker var. 🎓 <b>Hocaya Sor</b>: Zidane, Mourinho, Ancelotti gibi 10 efsane hocadan birini seç, saklı futbolcu hakkında bir şey söyler (ama yüzde kaç emin olduğuna dikkat, yanılabilir!). 💡 <b>İpucu</b>: futbolcunun adı, soyadı, doğum yılı veya kulübü hakkında bir bilgi verir. 🧠 <b>Akıllı Soru</b>: oyun adayları en çok eleyen soruyu senin yerine sorar ve soru hakkından düşmez.</li>
     <li><b>Kimse bulamazsa</b> "Bu turu pas geç" diyerek yeni tura geçebilirsiniz.</li>
     <li><b>Kazanan:</b> Hedef puana ilk ulaşan maçı alır. Sonunda skor tablosunu resim olarak kaydedip arkadaşlarına gönderebilirsin.</li>
   </ol>
@@ -545,6 +560,13 @@
   <div class="oneriler" id="saklaOneri" style="text-align:left"></div>
   <div id="saklaSecili" class="soluk" style="margin-top:8px;min-height:20px"></div>
   <button class="btn genis" id="saklaBtn" disabled>🔒 SAKLA</button>
+</div></div>
+<!-- Joker: teknik direktöre sor -->
+<div class="perde" id="hocaPerde" style="z-index:25"><div class="pencere" style="text-align:left">
+  <h2 style="margin-top:0">🎓 Hangi hocaya soralım?</h2>
+  <p class="soluk" style="margin:0 0 10px;font-size:13.5px">Hoca saklı futbolcu hakkında bir bilgi söyler. Ama hocalar da yanılabilir: yüzde kaç emin olduklarını yanlarında görürsün.</p>
+  <div class="modSec" id="hocaListe"></div>
+  <button class="btn ikinci genis" id="hocaKapat">Vazgeç</button>
 </div></div>
 <!-- Lig seçimi -->
 <div class="perde" id="ligPerde"><div class="pencere" id="ligKutu"></div></div>
@@ -819,7 +841,7 @@ function yeniMac() {
   let a = ad(0), b = tekMod ? 'Bilgisayar' : ad(1);
   if (!tekMod && norm(a) === norm(b)) b += ' 2';
   if (tekMod && norm(a) === 'bilgisayar') a += ' 2';
-  S = { adlar: [a, b], toplar: tekMod ? [{ renk: kurulum[0].renk, stil: kurulum[0].stil }, BILG_TOP] : kurulum.map(k => ({ renk: k.renk, stil: k.stil })), tek: tekMod, stad: stad, hedef: hedef, puan: [0, 0], tur: 1, lig: null, bulunan: 0, kullanilan: [], gizliler: [-1, -1], faz: 'lig', saklaSira: 0, gecmis: [], sira: 0, kalan: TUR_SORU, gosterilen: [], t: null, bitti: false, baslangic: Date.now() };
+  S = { adlar: [a, b], toplar: tekMod ? [{ renk: kurulum[0].renk, stil: kurulum[0].stil }, BILG_TOP] : kurulum.map(k => ({ renk: k.renk, stil: k.stil })), tek: tekMod, stad: stad, hedef: hedef, puan: [0, 0], tur: 1, lig: null, bulunan: 0, kullanilan: [], jk: {}, jkNot: [], gizliler: [-1, -1], faz: 'lig', saklaSira: 0, gecmis: [], sira: 0, kalan: TUR_SORU, gosterilen: [], t: null, bitti: false, baslangic: Date.now() };
   depo.yaz('ft_kurulum', kurulum); depo.yaz('ft_stad', stad); stadUygula(stad);
   turBaslat();
 }
@@ -831,7 +853,7 @@ function yenile() {
 }
 function turBaslat() {
   // Önce sırası gelen yarışmacı ligi seçer, sonra herkes kendi futbolcusunu saklar
-  S.lig = null; S.gizliler = [-1, -1]; S.gecmis = []; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gosterilen = []; S.gizliAcik = false; S.faz = 'lig'; S.t = null; SORULAR = [];
+  S.lig = null; S.jkNot = []; S.gizliler = [-1, -1]; S.gecmis = []; S.sira = (S.tur - 1) % 2; S.kalan = TUR_SORU; S.gosterilen = []; S.gizliAcik = false; S.faz = 'lig'; S.t = null; SORULAR = [];
   kaydet(); yenile(); ligPenceresi();
 }
 function ligPenceresi() {
@@ -905,6 +927,7 @@ function ciz() {
     $('gecmis').appendChild(li);
   });
   $('gecmisBos').style.display = benim.length ? 'none' : 'block';
+  jokerCiz();
 }
 
 /* =============================================================
@@ -957,6 +980,79 @@ function oneriBagla(girdi, kutu, secilince) {
     }
   });
 }
+
+
+/* =============================================================
+   Jokerler (sadece PC ile oynarken): Hocaya Sor, İpucu, Akıllı Soru. Her maçta birer kez.
+============================================================= */
+const HOCALAR = [
+  { ad: 'Zinedine Zidane', e: '🇫🇷', g: 80, soz: 'Sahada ne görüyorsam onu söylerim.' },
+  { ad: 'José Mourinho', e: '🇵🇹', g: 70, soz: 'Ben özel olanım, bana güven.' },
+  { ad: 'Carlo Ancelotti', e: '🇮🇹', g: 85, soz: 'Sakin ol, bakalım ne diyecek.' },
+  { ad: 'Pep Guardiola', e: '🇪🇸', g: 90, soz: 'Her detayı analiz ettim.' },
+  { ad: 'Jürgen Klopp', e: '🇩🇪', g: 75, soz: 'Kalbimle söylüyorum!' },
+  { ad: 'Sir Alex Ferguson', e: '🏴', g: 85, soz: '26 yıl tecrübe konuşuyor.' },
+  { ad: 'Arsène Wenger', e: '🇫🇷', g: 80, soz: 'Profesör hesabı yapar.' },
+  { ad: 'Fatih Terim', e: '🇹🇷', g: 75, soz: 'İmparator konuşuyor.' },
+  { ad: 'Diego Simeone', e: '🇦🇷', g: 65, soz: 'Maç maç maç!' },
+  { ad: 'Antonio Conte', e: '🇮🇹', g: 70, soz: 'Çok çalışırsan bilirsin.' }
+];
+function jokerCiz() {
+  const k = $('jokerKart'); if (!S || !S.tek) { k.style.display = 'none'; return; }
+  k.style.display = ''; S.jk = S.jk || {};
+  const acik = S.faz === 'oyun' && S.sira === 0 && S.kalan > 0;
+  [['jkHoca', 'hoca'], ['jkIpucu', 'ipucu'], ['jkAkil', 'akil']].forEach(([id, ad]) => { $(id).disabled = !!S.jk[ad] || !acik; });
+  $('jokerNot').innerHTML = (S.jkNot || []).map(t => '<div class="jn">' + kaçış(t) + '</div>').join('');
+}
+function jokerNotEkle(metin) { S.jkNot = S.jkNot || []; S.jkNot.push(metin); kaydet(); jokerCiz(); }
+// Joker hedefi: PC'nin sakladığı futbolcu (oyuncunun aradığı)
+const jokerHedef = () => Y[arananIdx()];
+$('jkHoca').onclick = () => {
+  if (!S || (S.jk = S.jk || {}).hoca || S.faz !== 'oyun' || S.sira !== 0) return;
+  $('hocaListe').innerHTML = HOCALAR.map((h, i) => '<button data-h="' + i + '"><b>' + h.e + ' ' + h.ad + ' <span style="color:var(--sari)">%' + h.g + ' emin</span></b><small>' + h.soz + '</small></button>').join('');
+  $('hocaListe').querySelectorAll('[data-h]').forEach(b => b.onclick = () => hocayaSor(+b.dataset.h));
+  $('hocaPerde').classList.add('acik');
+};
+$('hocaKapat').onclick = () => $('hocaPerde').classList.remove('acik');
+function hocayaSor(i) {
+  const h = HOCALAR[i], hedef = jokerHedef();
+  // Kesin bilinen (belirsizlik payı olmayan) sorulardan biri seçilir; hoca bazen yanılır
+  const uygun = SORULAR.filter(q => !q.bel && !q.zor && !q.kulup);
+  const q = uygun[rastgele(uygun.length)], gercek = !!q.f(hedef), dogru = rastgele(100) < h.g, soyler = dogru ? gercek : !gercek;
+  S.jk.hoca = 1; $('hocaPerde').classList.remove('acik');
+  jokerNotEkle('🎓 ' + h.ad + ' (%' + h.g + ' emin): "' + q.metin + ' Bence ' + (soyler ? 'EVET' : 'HAYIR') + '."');
+}
+$('jkIpucu').onclick = () => {
+  if (!S || (S.jk = S.jk || {}).ipucu || S.faz !== 'oyun' || S.sira !== 0) return;
+  const p = jokerHedef(), parca = p.ad.trim().split(/\s+/), ilk = parca[0], soy = parca.length > 1 ? parca.slice(1).join(' ') : parca[0];
+  const harf = x => x.charAt(0).toLocaleUpperCase('tr');
+  const kulup = p.kl.length ? p.kl[rastgele(p.kl.length)] : null, onyil = Math.floor(p.dg / 10) * 10;
+  const secenek = [
+    'Soyadı "' + harf(soy) + '" harfiyle başlıyor.',
+    parca.length > 1 ? 'Adı "' + harf(ilk) + '" harfiyle başlıyor.' : 'Adı "' + harf(ilk) + '" harfiyle başlıyor ve tek isimle tanınıyor.',
+    'Soyadı ' + soy.replace(/\s/g, '').length + ' harfli.',
+    'Doğum yılı ' + onyil + '-' + (onyil + 9) + ' arasında.',
+    kulup ? 'Kariyerinde ' + kulup + ' formasını giydi.' : null,
+    p.kl.length >= 2 ? 'Kariyerinde toplam ' + p.kl.length + ' kulüpte oynadı.' : null,
+    'Uyruğu: ' + p.uy + '.'
+  ].filter(Boolean);
+  S.jk.ipucu = 1; jokerNotEkle('💡 İpucu: ' + secenek[rastgele(secenek.length)]);
+};
+$('jkAkil').onclick = () => {
+  if (!S || (S.jk = S.jk || {}).akil || S.faz !== 'oyun' || S.sira !== 0) return;
+  // Bu turda oyuncunun şimdiye kadarki cevaplarına uyan adaylar; hepsini en iyi bölen soru seçilir
+  const sorulan = new Set(S.gecmis.filter(g => g.k === 0 && g.q != null).map(g => g.q));
+  let adaylar = havuz(S.lig).map(i => Y[i]);
+  S.gecmis.filter(g => g.k === 0 && g.q != null).forEach(g => { const q = SORULAR[g.q]; if (q) adaylar = adaylar.filter(p => !!q.f(p) === g.cevap); });
+  let en = null, enFark = 9;
+  SORULAR.forEach(q => { if (sorulan.has(q.id)) return; const e = adaylar.filter(q.f).length, oran = adaylar.length ? e / adaylar.length : 0; if (!e || e === adaylar.length) return; const f = Math.abs(oran - .5); if (f < enFark) { enFark = f; en = q; } });
+  S.jk.akil = 1;
+  if (!en) return jokerNotEkle('🧠 Akıllı soru: Bu aşamada ayırt edici bir soru kalmadı, doğrudan tahmin etmeyi dene.');
+  const cevap = !!en.f(jokerHedef());
+  S.gecmis.push({ q: en.id, metin: '🧠 ' + en.metin, cevap: cevap, k: 0 });
+  jokerNotEkle('🧠 Akıllı soru (bedava, soru hakkından düşmez): "' + en.metin + '" → ' + (cevap ? 'EVET' : 'HAYIR'));
+  yenile();
+};
 
 /* =============================================================
    Futbolcu saklama penceresi (her oyuncu kendi futbolcusunu yazıp SAKLA'ya basar)
