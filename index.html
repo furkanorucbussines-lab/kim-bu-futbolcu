@@ -70,7 +70,9 @@
   .ligler small { display: block; color: var(--soluk); font-weight: 400; margin-top: 3px; }
   /* ana ekran */
   [data-ekran=ana] h1 .bas { font-size: clamp(44px, 12vw, 72px); }
-  [data-ekran=ana] h1 .ust { font-size: 13px; margin-top: 16px; }
+  [data-ekran=ana] h1 .bas { margin-top: 22px; }
+  .yapimci { display: none; position: fixed; right: 10px; bottom: calc(6px + env(safe-area-inset-bottom)); z-index: 5; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #cfe3f2; background: rgba(5, 15, 25, .55); padding: 3px 9px; border-radius: 10px; pointer-events: none; }
+  body[data-ekran=ana] .yapimci { display: block; }
   [data-ekran=ana] p.alt { margin: 14px 0 20px; font-weight: 600; letter-spacing: .5px; }
   #pasSahne { max-width: 440px; margin: 18px auto 4px; }
   #pasSahne svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -363,8 +365,10 @@
 <div id="stadRozet"></div>
 <canvas id="konfeti"></canvas>
 
+<div class="yapimci">⚽ Furkan Oruç tarafından yazıldı</div>
+
 <main>
-  <h1><span class="ust">⚽ İKİ KİŞİLİK FUTBOL TAHMİN OYUNU</span><span class="bas">Kim bu <em>futbolcu?</em></span></h1>
+  <h1><span class="bas">Kim bu <em>futbolcu?</em></span></h1>
   <p class="alt" id="altYazi">Sor. Tahmin et. Şampiyon ol.</p>
 
   <!-- 0. Ana ekran -->
