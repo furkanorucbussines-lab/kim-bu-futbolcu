@@ -73,7 +73,9 @@
   [data-ekran=ana] h1 .bas { margin-top: 22px; }
   .yapimci { display: none; position: fixed; right: 10px; bottom: calc(6px + env(safe-area-inset-bottom)); z-index: 5; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #cfe3f2; background: rgba(5, 15, 25, .55); padding: 3px 9px; border-radius: 10px; pointer-events: none; }
   body[data-ekran=ana] .yapimci { display: block; }
-  [data-ekran=ana] p.alt { margin: 14px 0 20px; font-weight: 600; letter-spacing: .5px; }
+  [data-ekran=ana] p.alt { margin: 12px 0 22px; font-family: Impact, "Arial Black", "Segoe UI", sans-serif; font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(19px, 5.4vw, 30px);
+    background: linear-gradient(180deg, #fff 10%, #ffe36a 55%, #ff9f1c 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: .6px rgba(0,0,0,.35);
+    filter: drop-shadow(0 2px 0 #7a3a00) drop-shadow(0 4px 8px rgba(0,0,0,.7)); transform: skew(-6deg); text-shadow: none; }
   #pasSahne { max-width: 440px; margin: 18px auto 4px; }
   #pasSahne svg { width: 100%; height: auto; display: block; overflow: visible; }
   .pasX { animation: pasX 3.2s linear .16s infinite; }
