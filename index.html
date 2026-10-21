@@ -449,7 +449,7 @@
       <div class="skorlar" id="skorlar"></div>
     </div>
     <div class="kart durum">
-      <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span></div>
+      <div><span class="soluk">Sıra:</span> <b id="sira"></b><br><span class="soluk">Bu turda kalan soru:</span> <b id="kalanTur">5</b><br><span class="soluk" id="hedefSat"></span><br><b id="ipucuSat" style="color:var(--sari)"></b></div>
       <div class="deger">Tur <span id="turNo">1</span> • <span id="ligEtiket"></span> • Bulursan: <b>+10</b></div>
     </div>
     <div class="kart jokerKart" id="jokerKart" style="display:none">
@@ -543,7 +543,7 @@
     <li><b>Maçı kur.</b> Takma adını yaz, topunu seç, kaç puana oynayacağınızı ve stadyumu seç (Hızlı Maç 1 futbolcu bulana kadar, Efsane 10 futbolcu bulana kadar sürer).</li>
     <li><b>Lig seçilir.</b> Her turda sırası gelen taraf bir lig seçer (Süper Lig, Premier Lig, La Liga gibi). Bütün futbolcular o ligde oynamış oyunculardır.</li>
     <li><b>Futbolcunu sakla.</b> Gizli bir futbolcu seç: adını yaz, listeden dokun ve <b>SAKLA</b>'ya bas. Rakip ekrana bakmasın! PC ile oynarken bilgisayar da kendi futbolcusunu saklar.</li>
-    <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
+    <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her turun başında aranan futbolcunun <b>Galatasaray / Fenerbahçe / Beşiktaş</b> bilgisi ipucu olarak yazılır (ör. "Büyük 3'ten yalnızca Fenerbahçe'de oynadı"). Sorular da bu ipucuna ve aldığın cevaplara göre, adayları en çok eleyenler olarak seçilir. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
     <li><b>Tahmin et.</b> Aklına gelen futbolcuyu "Tahmin" kutusuna yaz. Doğruysa <b>10 puan</b> senin ve tur biter. <b>Yanlış tahmin bir soru hakkı yakar ve sıran biter</b>, o yüzden emin olmadan tahmin etme.</li>
     <li><b>PC ile oynarken:</b> bilgisayar sırası gelince senin futbolcuna soru sorar. Sen sadece <b>EVET</b> ya da <b>HAYIR</b> dersin. Doğru cevabı verdiğinden oyun emin olur: yanlış basarsan uyarır. Kayıt hatalıysa "Bu soruyu atla"ya veya aynı cevaba bir kez daha basarak devam edebilirsin.</li>
     <li><b>Jokerler (sadece PC ile oynarken):</b> Her turun başında yenilenen 3 jokerin var (turda her jokeri bir kez kullanabilirsin). 🎓 <b>Hocaya Sor</b>: Zidane, Mourinho, Ancelotti gibi 10 efsane hocadan birini seç (sorduğun hoca maç boyunca bir daha sorulamaz, sıradaki turlarda diğerlerine sorarsın), saklı futbolcu hakkında bir şey söyler (ama yüzde kaç emin olduğuna dikkat, yanılabilir!). 💡 <b>İpucu</b>: futbolcunun adı, soyadı, doğum yılı veya kulübü hakkında bir bilgi verir. 🧠 <b>Akıllı Soru</b>: oyun adayları en çok eleyen soruyu senin yerine sorar ve soru hakkından düşmez.</li>
@@ -564,7 +564,7 @@
 <!-- Joker: teknik direktöre sor -->
 <div class="perde" id="hocaPerde" style="z-index:25"><div class="pencere" style="text-align:left">
   <h2 style="margin-top:0">🎓 Hangi hocaya soralım?</h2>
-  <p class="soluk" style="margin:0 0 10px;font-size:13.5px">Hoca saklı futbolcu hakkında bir bilgi söyler. Ama hocalar da yanılabilir: yüzde kaç emin olduklarını yanlarında görürsün.</p>
+  <p class="soluk" style="margin:0 0 10px;font-size:13.5px">Hoca saklı futbolcu hakkında bir bilgi söyler. Ama hocalar da yanılabilir: yüzde kaç emin olduklarını yanlarında görürsün. (Akıllı Soru ise her zaman doğruyu söyler.)</p>
   <div class="modSec" id="hocaListe"></div>
   <button class="btn ikinci genis" id="hocaKapat">Vazgeç</button>
 </div></div>
@@ -879,13 +879,39 @@ function oyunuBaslat() {
   if (S.tek && S.sira === 1) return tekSonraki();
   yenile();
 }
+// Başlangıç ipucu: aranan futbolcunun Galatasaray / Fenerbahçe / Beşiktaş bilgisi baştan verilir
+const BUYUK3_EK = { 'Galatasaray': "Galatasaray'da", 'Fenerbahçe': "Fenerbahçe'de", 'Beşiktaş': "Beşiktaş'ta" };
+const buyukSet = p => TR_BUYUK3.filter(k => p.kl.includes(k));
+function ipucuMetni(p) {
+  const b = buyukSet(p), yok = TR_BUYUK3.filter(k => !b.includes(k));
+  if (!b.length) return "Galatasaray, Fenerbahçe ve Beşiktaş'ın hiçbirinde oynamadı.";
+  if (b.length === 3) return "Galatasaray, Fenerbahçe ve Beşiktaş'ın üçünde de oynadı.";
+  if (b.length === 1) return "Büyük 3'ten yalnızca " + BUYUK3_EK[b[0]] + " oynadı.";
+  return "Büyük 3'ten " + b[0] + ' ve ' + BUYUK3_EK[b[1]] + ' oynadı, ' + BUYUK3_EK[yok[0]] + ' oynamadı.';
+}
+const ipucuUyar = (a, hedef) => buyukSet(a).join() === buyukSet(hedef).join();
+// Sıradaki yarışmacının aradığı futbolcu için kalan adaylar: ipucuya ve bu turda aldığı cevaplara uyanlar
+function adayHavuz(hedefIdx, sira) {
+  const hedef = Y[hedefIdx]; let H = havuz(S.lig).map(i => Y[i]).filter(p => ipucuUyar(p, hedef));
+  S.gecmis.filter(g => g.k === sira && g.q != null).forEach(g => { const q = SORULAR[g.q]; if (q) H = H.filter(p => !!q.f(p) === g.cevap); });
+  return H;
+}
+// Kalan adayları gerçekten ayıran sorular, en dengeli (yaklaşık yarı yarıya bölen) olan başta
+function bilgiliSorular(H, sorulan) {
+  const n = H.length, liste = [];
+  SORULAR.forEach(q => {
+    if (sorulan.has(q.id)) return;
+    const e = H.filter(q.f).length; if (!e || e === n) return;
+    liste.push({ q, skor: 1 - Math.abs(2 * e / n - 1) + Math.random() * .25 });
+  });
+  return liste.sort((a, b) => b.skor - a.skor);
+}
 function karistirSorular() {
-  // Karışık gelsin ama sadece kulüp sorularından oluşmasın: 7 genel + 5 kulüp. Sırası gelenin daha önce sorduğu sorular tekrar çıkmaz.
-  const sorulan = new Set(S.gecmis.filter(g => g.q != null && g.k === S.sira).map(g => g.q));
-  const uygun = SORULAR.filter(s => !sorulan.has(s.id));
-  const genel = karistir(uygun.filter(s => !s.kulup)).slice(0, EKRAN_SORU - 5);
-  const kulup = karistir(uygun.filter(s => s.kulup)).slice(0, EKRAN_SORU - genel.length);
-  S.gosterilen = karistir(genel.concat(kulup)).map(s => s.id);
+  const sira = S.sira, sorulan = new Set(S.gecmis.filter(g => g.q != null && g.k === sira).map(g => g.q));
+  const liste = bilgiliSorular(adayHavuz(S.gizliler[1 - sira], sira), sorulan);
+  // En çok eleyen 7 genel + 5 kulüp sorusu gösterilir (sadece kulüp sorusundan oluşmasın)
+  const genel = liste.filter(x => !x.q.kulup).slice(0, EKRAN_SORU - 5), kulup = liste.filter(x => x.q.kulup).slice(0, EKRAN_SORU - genel.length);
+  S.gosterilen = karistir(genel.concat(kulup).map(x => x.q.id));
 }
 
 /* =============================================================
@@ -910,6 +936,7 @@ function ciz() {
   else bantYaz('siraBant', 'Futbolcular saklanıyor…', 'bekle');
   $('sira').textContent = S.adlar[S.sira];
   $('hedefSat').textContent = oyunda ? S.adlar[1 - S.sira] + ' adlı oyuncunun saklı futbolcusunu arıyor' : 'Futbolcular saklanıyor…';
+  $('ipucuSat').textContent = oyunda ? '🔎 İpucu: ' + ipucuMetni(Y[arananIdx()]) : '';
   $('kalanTur').textContent = S.kalan; $('turNo').textContent = S.tur; $('ligEtiket').textContent = ligAd(S.lig) || 'Lig seçiliyor';
   const dolu = !oyunda;
   $('sorular').innerHTML = '';
@@ -945,8 +972,7 @@ function sor(q) {
   S.gecmis.push({ q: q.id, metin: q.metin, cevap: !!q.f(Y[arananIdx()]), k: S.sira });
   S.kalan--;
   if (S.kalan <= 0) return sirayiDegistir();
-  S.gosterilen = S.gosterilen.filter(id => id !== q.id);
-  if (S.gosterilen.length < 6) karistirSorular();
+  karistirSorular();
   kaydet(); yenile();
 }
 function tahmin(idx) {
@@ -1019,7 +1045,8 @@ $('hocaKapat').onclick = () => $('hocaPerde').classList.remove('acik');
 function hocayaSor(i) {
   const h = HOCALAR[i], hedef = jokerHedef();
   // Kesin bilinen (belirsizlik payı olmayan) sorulardan biri seçilir; hoca bazen yanılır
-  const uygun = SORULAR.filter(q => !q.bel && !q.zor && !q.kulup);
+  const ilk5 = bilgiliSorular(adayHavuz(S.gizliler[1], 0), new Set(S.gecmis.filter(g => g.k === 0 && g.q != null).map(g => g.q))).map(x => x.q).filter(x => !x.bel && !x.zor && !x.kulup).slice(0, 5);
+  const uygun = ilk5.length ? ilk5 : SORULAR.filter(q => !q.bel && !q.zor && !q.kulup);
   const q = uygun[rastgele(uygun.length)], gercek = !!q.f(hedef), dogru = rastgele(100) < h.g, soyler = dogru ? gercek : !gercek;
   S.jk.hoca = 1; (S.hocaKul = S.hocaKul || []).push(i); $('hocaPerde').classList.remove('acik');
   jokerNotEkle('🎓 ' + h.ad + ' (%' + h.g + ' emin): "' + q.metin + ' Bence ' + (soyler ? 'EVET' : 'HAYIR') + '."');
@@ -1044,14 +1071,13 @@ $('jkAkil').onclick = () => {
   if (!S || (S.jk = S.jk || {}).akil || S.faz !== 'oyun' || S.sira !== 0) return;
   // Bu turda oyuncunun şimdiye kadarki cevaplarına uyan adaylar; hepsini en iyi bölen soru seçilir
   const sorulan = new Set(S.gecmis.filter(g => g.k === 0 && g.q != null).map(g => g.q));
-  let adaylar = havuz(S.lig).map(i => Y[i]);
-  S.gecmis.filter(g => g.k === 0 && g.q != null).forEach(g => { const q = SORULAR[g.q]; if (q) adaylar = adaylar.filter(p => !!q.f(p) === g.cevap); });
+  const adaylar = adayHavuz(S.gizliler[1], 0);
   let en = null, enFark = 9;
   SORULAR.forEach(q => { if (sorulan.has(q.id)) return; const e = adaylar.filter(q.f).length, oran = adaylar.length ? e / adaylar.length : 0; if (!e || e === adaylar.length) return; const f = Math.abs(oran - .5); if (f < enFark) { enFark = f; en = q; } });
   S.jk.akil = 1;
   if (!en) return jokerNotEkle('🧠 Akıllı soru: Bu aşamada ayırt edici bir soru kalmadı, doğrudan tahmin etmeyi dene.');
   const cevap = !!en.f(jokerHedef());
-  S.gecmis.push({ q: en.id, metin: '🧠 ' + en.metin, cevap: cevap, k: 0 });
+  S.gecmis.push({ q: en.id, metin: '🧠 ' + en.metin, cevap: cevap, k: 0 }); karistirSorular();
   jokerNotEkle('🧠 Akıllı soru (bedava, soru hakkından düşmez): "' + en.metin + '" → ' + (cevap ? 'EVET' : 'HAYIR'));
   yenile();
 };
@@ -1064,6 +1090,7 @@ function saklaGuncelle() {
   const sc = saklaSecilen != null ? Y[saklaSecilen] : null;
   $('saklaSecili').innerHTML = sc ? '✅ <b style="color:var(--yazi)">' + kaçış(sc.ad) + '</b> • ' + kaçış(sc.uy) + ' • ' + MEVKI[sc.mv] : 'Listeden bir futbolcu seçmelisin.';
   $('saklaBtn').disabled = !sc;
+  if (sc) $('saklaSecili').innerHTML += '<br><span style="color:var(--sari)">🔎 Rakibe verilecek ipucu: ' + ipucuMetni(sc) + '</span>';
 }
 function saklaPenceresi() {
   const sk = S.saklaSira;
@@ -1075,7 +1102,8 @@ oneriBagla($('saklaAd'), $('saklaOneri'), idx => { saklaSecilen = idx; $('saklaA
 $('saklaAd').addEventListener('input', () => { saklaSecilen = null; saklaGuncelle(); });
 $('saklaBtn').onclick = () => {
   if (saklaSecilen == null || !S) return;
-  S.gizliler[S.saklaSira] = saklaSecilen; S.kullanilan.push(saklaSecilen); saklaSecilen = null; $('saklaAd').value = ''; $('saklaOneri').innerHTML = '';
+  S.gizliler[S.saklaSira] = saklaSecilen; S.kullanilan.push(saklaSecilen);
+  if (S.tek && S.saklaSira === 0) { const hd = Y[saklaSecilen]; S.t.adaylar = S.t.adaylar.filter(i => ipucuUyar(Y[i], hd)); S.t.ipucu = ipucuMetni(hd); } saklaSecilen = null; $('saklaAd').value = ''; $('saklaOneri').innerHTML = '';
   if (!S.tek && S.saklaSira === 0) { S.saklaSira = 1; kaydet(); return saklaPenceresi(); }
   $('saklaPerde').classList.remove('acik'); oyunuBaslat();
 };
@@ -1152,6 +1180,7 @@ function tekCiz() {
   if (b) {
     $('tekBalon').innerHTML = b.tip === 'soru' ? '<small>Soru ' + (t.gecmis.length + 1) + ' • senin futbolcun için</small>' + kaçış(b.metin) :
       '<small>Tahminim (' + (t.gecmis.length + 1) + '. soru)</small>Futbolcun <u>' + kaçış(Y[b.idx].ad) + '</u> mu?<small style="margin:4px 0 0">' + kaçış(Y[b.idx].uy) + ' • ' + MEVKI[Y[b.idx].mv] + '</small>';
+    if (t.ipucu) $('tekBalon').innerHTML += '<small style="margin:8px 0 0">🔎 Bildiğim: ' + kaçış(t.ipucu) + '</small>';
     if (t.uyari) $('tekBalon').innerHTML += '<small style="margin:8px 0 0;color:#a32;font-weight:700">' + kaçış(t.uyari) + '</small>';
     $('tekAtla').style.display = b.tip === 'soru' ? '' : 'none'; $('tekAtla').disabled = t.atla >= TEK_ATLA; $('tekAtla').textContent = 'Bu soruyu atla (' + (TEK_ATLA - t.atla) + ')';
     $('tekAday').textContent = 'Aklımdaki aday sayısı: ' + t.adaylar.length;
