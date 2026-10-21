@@ -543,7 +543,7 @@
     <li><b>Maçı kur.</b> Takma adını yaz, topunu seç, kaç puana oynayacağınızı ve stadyumu seç (Hızlı Maç 1 futbolcu bulana kadar, Efsane 10 futbolcu bulana kadar sürer).</li>
     <li><b>Lig seçilir.</b> Her turda sırası gelen taraf bir lig seçer (Süper Lig, Premier Lig, La Liga gibi). Bütün futbolcular o ligde oynamış oyunculardır.</li>
     <li><b>Futbolcunu sakla.</b> Gizli bir futbolcu seç: adını yaz, listeden dokun ve <b>SAKLA</b>'ya bas. Rakip ekrana bakmasın! PC ile oynarken bilgisayar da kendi futbolcusunu saklar.</li>
-    <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her turun başında aranan futbolcunun <b>Galatasaray / Fenerbahçe / Beşiktaş</b> bilgisi ipucu olarak yazılır (ör. "Büyük 3'ten yalnızca Fenerbahçe'de oynadı"). Sorular da bu ipucuna ve aldığın cevaplara göre, adayları en çok eleyenler olarak seçilir. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
+    <li><b>Sırayla soru sor.</b> Ekranda hazır sorular çıkar ("Türk futbolcu mu?", "Forvet mi?", "Barcelona formasını giydi mi?" gibi). Birine dokununca cevap <b>EVET / HAYIR</b> olarak gelir. Cevapları oyun kendisi verir, kimse yalan söyleyemez. Her turun başında aranan futbolcu için, seçtiğin ligin <b>büyük kulüplerindeki geçmişi</b> ipucu olarak yazılır (ör. İngiltere ligindeyse "Manchester United'da oynadı"). Sorular da bu ipucuna ve aldığın cevaplara göre, adayları en çok eleyenler olarak seçilir. Her sıranda <b>5 soru</b> hakkın var. Beğenmediğin sorular için "Karıştır"a basabilirsin.</li>
     <li><b>Tahmin et.</b> Aklına gelen futbolcuyu "Tahmin" kutusuna yaz. Doğruysa <b>10 puan</b> senin ve tur biter. <b>Yanlış tahmin bir soru hakkı yakar ve sıran biter</b>, o yüzden emin olmadan tahmin etme.</li>
     <li><b>PC ile oynarken:</b> bilgisayar sırası gelince senin futbolcuna soru sorar. Sen sadece <b>EVET</b> ya da <b>HAYIR</b> dersin. Doğru cevabı verdiğinden oyun emin olur: yanlış basarsan uyarır. Kayıt hatalıysa "Bu soruyu atla"ya veya aynı cevaba bir kez daha basarak devam edebilirsin.</li>
     <li><b>Jokerler (sadece PC ile oynarken):</b> Her turun başında yenilenen 3 jokerin var (turda her jokeri bir kez kullanabilirsin). 🎓 <b>Hocaya Sor</b>: Zidane, Mourinho, Ancelotti gibi 10 efsane hocadan birini seç (sorduğun hoca maç boyunca bir daha sorulamaz, sıradaki turlarda diğerlerine sorarsın), saklı futbolcu hakkında bir şey söyler (ama yüzde kaç emin olduğuna dikkat, yanılabilir!). 💡 <b>İpucu</b>: futbolcunun adı, soyadı, doğum yılı veya kulübü hakkında bir bilgi verir. 🧠 <b>Akıllı Soru</b>: oyun adayları en çok eleyen soruyu senin yerine sorar ve soru hakkından düşmez.</li>
@@ -894,38 +894,84 @@ function oyunuBaslat() {
   if (S.tek && S.sira === 1) return tekSonraki();
   yenile();
 }
-// Başlangıç ipucu: aranan futbolcunun Galatasaray / Fenerbahçe / Beşiktaş bilgisi baştan verilir
-const BUYUK3_EK = { 'Galatasaray': "Galatasaray'da", 'Fenerbahçe': "Fenerbahçe'de", 'Beşiktaş': "Beşiktaş'ta" };
-const buyukSet = p => TR_BUYUK3.filter(k => p.kl.includes(k));
+// Başlangıç ipucu: aranan futbolcunun, seçilen ligin büyük kulüplerindeki geçmişi baştan verilir
+const BUYUKLER = {
+  tr: ['Galatasaray', 'Fenerbahçe', 'Beşiktaş'],
+  en: ['Manchester United', 'Manchester City', 'Chelsea', 'Arsenal', 'Liverpool', 'Tottenham'],
+  es: ['Real Madrid', 'Barcelona', 'Atlético Madrid', 'Sevilla', 'Valencia'],
+  it: ['Juventus', 'Milan', 'Inter', 'Roma', 'Napoli'],
+  de: ['Bayern Münih', 'Dortmund', 'Leverkusen', 'Schalke'],
+  fr: ['PSG', 'Marsilya', 'Lyon', 'Monaco']
+};
+const buyukSet = p => (BUYUKLER[S.lig] || []).filter(k => p.kl.includes(k));
+// Eşleşme anahtarı: 3 veya daha fazla büyükte oynadıysa "3+", hiçbirinde oynamadıysa mevkisi, aksi halde hangi büyüklerde oynadığı
+function ipucuAnahtar(p) { const b = buyukSet(p); return b.length >= 3 ? '3+' : b.length ? b.join('|') : 'yok|' + p.mv; }
 function ipucuMetni(p) {
-  const b = buyukSet(p), yok = TR_BUYUK3.filter(k => !b.includes(k));
-  if (!b.length) return "Galatasaray, Fenerbahçe ve Beşiktaş'ın hiçbirinde oynamadı.";
-  if (b.length === 3) return "Galatasaray, Fenerbahçe ve Beşiktaş'ın üçünde de oynadı.";
-  if (b.length === 1) return "Büyük 3'ten yalnızca " + BUYUK3_EK[b[0]] + " oynadı.";
-  return "Büyük 3'ten " + b[0] + ' ve ' + BUYUK3_EK[b[1]] + ' oynadı, ' + BUYUK3_EK[yok[0]] + ' oynamadı.';
+  const tum = (BUYUKLER[S.lig] || []).join(', '), b = buyukSet(p);
+  if (b.length >= 3) return 'Büyük kulüplerden (' + tum + ') en az üçünde oynadı.';
+  if (!b.length) return 'Büyük kulüplerin (' + tum + ') hiçbirinde oynamadı. Mevkisi: ' + MEVKI[p.mv] + '.';
+  return 'Büyük kulüplerden (' + tum + ') şunlarda oynadı: ' + b.join(', ') + '. Diğerlerinde oynamadı.';
 }
-const ipucuUyar = (a, hedef) => buyukSet(a).join() === buyukSet(hedef).join();
+const ipucuUyar = (a, hedef) => ipucuAnahtar(a) === ipucuAnahtar(hedef);
+// Dinamik soru tanımı (d) -> koşul. Kayıtlı maçta da aynı soru yeniden kurulabilsin diye soru bir tanımla saklanır
+function fDin(d) {
+  switch (d.t) {
+    case 'kl': return p => p.kl.includes(d.v);
+    case 'uy': return p => p.uy === d.v;
+    case 'dg': return p => p.dg >= d.v;
+    case 'kn': return p => p.kl.length >= d.v;
+    case 'ilk': return p => p.ad.trim().charAt(0) === d.v;
+    case 'soy': return p => { const t = p.ad.trim().split(/\s+/); return t[t.length - 1].charAt(0) === d.v; };
+  }
+  return () => false;
+}
+function sorulaEkle(metin, d, kulup, harf) {
+  let q = SORULAR.find(x => x.metin === metin);
+  if (!q) { q = { id: SORULAR.length, metin, f: fDin(d), d, kulup: !!kulup, zor: false, bel: null, dyn: true, harf: !!harf }; SORULAR.push(q); }
+  return q;
+}
+// Kalan adaylara göre yeni sorular üretir: kulüp, uyruk, doğum yılı, kulüp sayısı, baş harf. Soru hiç bitmesin.
+function dinamikSorular(H) {
+  const n = H.length; if (n < 2) return;
+  const enIyi = (liste, k) => liste.filter(x => x.e >= 1 && x.e <= n - 1).sort((a, b) => Math.abs(a.e / n - .5) - Math.abs(b.e / n - .5)).slice(0, k);
+  const say = f => { const m = {}; H.forEach(p => f(p).forEach(k => m[k] = (m[k] || 0) + 1)); return Object.entries(m).map(([v, e]) => ({ v, e })); };
+  enIyi(say(p => p.kl), 30).forEach(x => sorulaEkle(x.v + ' formasını giydi mi?', { t: 'kl', v: x.v }, true));
+  enIyi(say(p => [p.uy]), 8).forEach(x => sorulaEkle(UYRUK_SIFAT[x.v] ? UYRUK_SIFAT[x.v] + ' mı?' : x.v + ' uyruklu mu?', { t: 'uy', v: x.v }));
+  const yillar = H.map(p => p.dg).sort((a, b) => a - b);
+  [.25, .5, .75].forEach(q => { const v = yillar[Math.floor(n * q)]; const e = H.filter(p => p.dg >= v).length; if (e >= 1 && e <= n - 1) sorulaEkle(v + ' ve sonrasında mı doğdu?', { t: 'dg', v }); });
+  for (let k = 2; k <= 10; k++) { const e = H.filter(p => p.kl.length >= k).length; if (e >= 1 && e <= n - 1 && Math.abs(e / n - .5) < .35) sorulaEkle('Kariyerinde en az ' + k + ' kulüpte oynadı mı?', { t: 'kn', v: k }); }
+  enIyi(say(p => [p.ad.trim().charAt(0)]), 5).forEach(x => sorulaEkle('Adı ' + x.v + ' harfiyle mi başlıyor?', { t: 'ilk', v: x.v }, false, true));
+  enIyi(say(p => { const t = p.ad.trim().split(/\s+/); return [t[t.length - 1].charAt(0)]; }), 5).forEach(x => sorulaEkle('Soyadı ' + x.v + ' harfiyle mi başlıyor?', { t: 'soy', v: x.v }, false, true));
+}
+// Geçmişteki bir cevabın sorusu (kayıtlı maçta da çalışsın diye tanımdan kurulur)
+const gecmisSoru = g => g.qd ? { f: fDin(g.qd), metin: g.qm } : SORULAR[g.q];
+const gecmisMetin = g => g.qm || (SORULAR[g.q] || {}).metin;
+const soruKaydi = (q, cevap, sira, metin) => ({ q: q.id, qm: q.metin, qd: q.d, metin: metin || q.metin, cevap, k: sira });
 // Sıradaki yarışmacının aradığı futbolcu için kalan adaylar: ipucuya ve bu turda aldığı cevaplara uyanlar
 function adayHavuz(hedefIdx, sira) {
   const hedef = Y[hedefIdx]; let H = havuz(S.lig).map(i => Y[i]).filter(p => ipucuUyar(p, hedef));
-  S.gecmis.filter(g => g.k === sira && g.q != null).forEach(g => { const q = SORULAR[g.q]; if (q) H = H.filter(p => !!q.f(p) === g.cevap); });
+  S.gecmis.filter(g => g.k === sira && g.q != null).forEach(g => { const q = gecmisSoru(g); if (q) H = H.filter(p => !!q.f(p) === g.cevap); });
   return H;
 }
+const sorulanlar = sira => new Set(S.gecmis.filter(g => g.q != null && g.k === sira).map(gecmisMetin));
 // Kalan adayları gerçekten ayıran sorular, en dengeli (yaklaşık yarı yarıya bölen) olan başta
-function bilgiliSorular(H, sorulan) {
+function bilgiliSorular(H, sorulan, sansSiz) {
+  dinamikSorular(H);
   const n = H.length, liste = [];
   SORULAR.forEach(q => {
-    if (sorulan.has(q.id)) return;
+    if (sorulan.has(q.metin)) return;
     const e = H.filter(q.f).length; if (!e || e === n) return;
-    liste.push({ q, skor: 1 - Math.abs(2 * e / n - 1) + Math.random() * .25 });
+    liste.push({ q, skor: 1 - Math.abs(2 * e / n - 1) + (sansSiz ? 0 : Math.random() * .25) });
   });
   return liste.sort((a, b) => b.skor - a.skor);
 }
 function karistirSorular() {
-  const sira = S.sira, sorulan = new Set(S.gecmis.filter(g => g.q != null && g.k === sira).map(g => g.q));
-  const liste = bilgiliSorular(adayHavuz(S.gizliler[1 - sira], sira), sorulan);
-  // En çok eleyen 7 genel + 5 kulüp sorusu gösterilir (sadece kulüp sorusundan oluşmasın)
-  const genel = liste.filter(x => !x.q.kulup).slice(0, EKRAN_SORU - 5), kulup = liste.filter(x => x.q.kulup).slice(0, EKRAN_SORU - genel.length);
+  const sira = S.sira, liste = bilgiliSorular(adayHavuz(S.gizliler[1 - sira], sira), sorulanlar(sira));
+  // En çok eleyen 7 genel + 5 kulüp sorusu gösterilir; baş harf soruları sadece başka soru azsa
+  let genel = liste.filter(x => !x.q.kulup && !x.q.harf);
+  if (genel.length < 6) genel = genel.concat(liste.filter(x => x.q.harf));
+  genel = genel.slice(0, EKRAN_SORU - 5);
+  const kulup = liste.filter(x => x.q.kulup).slice(0, EKRAN_SORU - genel.length);
   S.gosterilen = karistir(genel.concat(kulup).map(x => x.q.id));
 }
 
@@ -985,7 +1031,7 @@ function sirayiDegistir() {
 }
 function sor(q) {
   if (!S.lig || S.faz !== 'oyun' || S.kalan <= 0) return;
-  S.gecmis.push({ q: q.id, metin: q.metin, cevap: !!q.f(Y[arananIdx()]), k: S.sira });
+  S.gecmis.push(soruKaydi(q, !!q.f(Y[arananIdx()]), S.sira));
   S.kalan--;
   if (S.kalan <= 0) return sirayiDegistir();
   karistirSorular();
@@ -1061,7 +1107,7 @@ $('hocaKapat').onclick = () => $('hocaPerde').classList.remove('acik');
 function hocayaSor(i) {
   const h = HOCALAR[i], hedef = jokerHedef();
   // Kesin bilinen (belirsizlik payı olmayan) sorulardan biri seçilir; hoca bazen yanılır
-  const ilk5 = bilgiliSorular(adayHavuz(S.gizliler[1], 0), new Set(S.gecmis.filter(g => g.k === 0 && g.q != null).map(g => g.q))).map(x => x.q).filter(x => !x.bel && !x.zor && !x.kulup).slice(0, 5);
+  const ilk5 = bilgiliSorular(adayHavuz(S.gizliler[1], 0), sorulanlar(0)).map(x => x.q).filter(x => !x.bel && !x.zor && !x.kulup && !x.dyn).slice(0, 5);
   const uygun = ilk5.length ? ilk5 : SORULAR.filter(q => !q.bel && !q.zor && !q.kulup);
   const q = uygun[rastgele(uygun.length)], gercek = !!q.f(hedef), dogru = rastgele(100) < h.g, soyler = dogru ? gercek : !gercek;
   S.jk.hoca = 1; (S.hocaKul = S.hocaKul || []).push(i); $('hocaPerde').classList.remove('acik');
@@ -1086,14 +1132,11 @@ $('jkIpucu').onclick = () => {
 $('jkAkil').onclick = () => {
   if (!S || (S.jk = S.jk || {}).akil || S.faz !== 'oyun' || S.sira !== 0) return;
   // Bu turda oyuncunun şimdiye kadarki cevaplarına uyan adaylar; hepsini en iyi bölen soru seçilir
-  const sorulan = new Set(S.gecmis.filter(g => g.k === 0 && g.q != null).map(g => g.q));
-  const adaylar = adayHavuz(S.gizliler[1], 0);
-  let en = null, enFark = 9;
-  SORULAR.forEach(q => { if (sorulan.has(q.id)) return; const e = adaylar.filter(q.f).length, oran = adaylar.length ? e / adaylar.length : 0; if (!e || e === adaylar.length) return; const f = Math.abs(oran - .5); if (f < enFark) { enFark = f; en = q; } });
+  const adaylar = adayHavuz(S.gizliler[1], 0), liste = bilgiliSorular(adaylar, sorulanlar(0), true), en = liste.length ? liste[0].q : null;
   S.jk.akil = 1;
   if (!en) return jokerNotEkle('🧠 Akıllı soru: Bu aşamada ayırt edici bir soru kalmadı, doğrudan tahmin etmeyi dene.');
   const cevap = !!en.f(jokerHedef());
-  S.gecmis.push({ q: en.id, metin: '🧠 ' + en.metin, cevap: cevap, k: 0 }); karistirSorular();
+  S.gecmis.push(soruKaydi(en, cevap, 0, '🧠 ' + en.metin)); karistirSorular();
   jokerNotEkle('🧠 Akıllı soru (bedava, soru hakkından düşmez): "' + en.metin + '" → ' + (cevap ? 'EVET' : 'HAYIR'));
   yenile();
 };
@@ -1137,7 +1180,7 @@ const pcTukendi = () => !S.t || !S.t.adaylar.length;
 function tekSoruSec() {
   const n = S.t.adaylar.length, P = S.t.adaylar.map(i => Y[i]), sorulan = new Set(S.t.gecmis.map(g => g.metin).concat(S.t.atlanan || [])), liste = [];
   const ekle = (metin, f, bel) => { if (sorulan.has(metin)) return; const e = P.filter(f).length; if (!e || e === n) return; const ey = bel ? P.filter(p => f(p) || bel(p)).length : e, eh = bel ? P.filter(p => !f(p) || bel(p)).length : n - e, oran = 1 - Math.max(ey, eh) / n; if (oran <= 0) return; liste.push({ metin, f, bel, oran }); };
-  SORULAR.filter(s => !s.zor).forEach(s => ekle(s.metin, s.f, s.bel));
+  SORULAR.filter(s => !s.zor && !s.dyn).forEach(s => ekle(s.metin, s.f, s.bel));
   const kul = {}; P.forEach(p => p.kl.forEach(k => kul[k] = 1));
   Object.keys(kul).forEach(k => ekle(k + ' formasını giydi mi?', p => p.kl.includes(k)));
   let en = liste.reduce((m, q) => Math.max(m, q.oran), 0);
@@ -1387,7 +1430,7 @@ function borazan(buyuk) {
    Kendi müziğini eklemek istersen dosyayı muzik/giris.mp3 olarak koy; yoksa oyunun kendi marşı çalar.
 ============================================================= */
 const muzik = (() => {
-  let ctx = null, ana = null, zamanlayici = null, el = null, acildi = false, calan = false, bar = 0;
+  let ctx = null, ana = null, zamanlayici = null, el = null, calan = false, bar = 0;
   let sessiz = !!depo.oku('ft_sessiz', false);
   const AKOR = [[146.8, 174.6, 220], [116.5, 146.8, 174.6], [174.6, 220, 261.6], [110, 138.6, 164.8], [98, 116.5, 146.8], [116.5, 146.8, 174.6], [130.8, 164.8, 196], [146.8, 174.6, 220]];
   const MEL = [[587, 523, 440, 587], [466, 440, 349, 466], [523, 587, 698, 880], [659, 554, 440, 554], [587, 466, 392, 587], [698, 587, 466, 587], [784, 659, 523, 659], [880, 698, 587, 880]];
@@ -1413,7 +1456,7 @@ const muzik = (() => {
   function sentezBaslat() {
     try {
       ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === 'suspended') ctx.resume();
+      if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); bekle(() => { if (calan && ctx) ctx.resume(); }); }
       ana = ctx.createGain(); ana.gain.setValueAtTime(0.0001, ctx.currentTime); ana.gain.linearRampToValueAtTime(.9, ctx.currentTime + 1.5);
       const yank = ctx.createDelay(1); yank.delayTime.value = .23; const yg = ctx.createGain(); yg.gain.value = .35;
       ana.connect(ctx.destination); ana.connect(yank); yank.connect(yg); yg.connect(ctx.destination); yg.connect(yank);
@@ -1422,12 +1465,22 @@ const muzik = (() => {
       don(); zamanlayici = setInterval(don, 1000);
     } catch (e) {}
   }
+  // Tarayıcı sesi dokunuş olmadan engellerse, ilk dokunuşta/tuşta hemen devam eder (mobil uygulamada engel yoktur)
+  function bekle(fn) {
+    const ev = ['pointerdown', 'touchstart', 'keydown', 'click'], once = () => { ev.forEach(e => removeEventListener(e, once, true)); fn(); };
+    ev.forEach(e => addEventListener(e, once, true));
+  }
   function baslat() {
-    if (calan || sessiz || !acildi) return; calan = true;
+    if (calan || sessiz) return; calan = true;
     try {
       el = new Audio('muzik/giris.mp3'); el.loop = true; el.volume = .8;
       el.addEventListener('error', () => { if (calan && !zamanlayici) { el = null; sentezBaslat(); } }, { once: true });
-      const pr = el.play(); if (pr && pr.catch) pr.catch(() => { if (calan && !zamanlayici) { el = null; sentezBaslat(); } });
+      const pr = el.play();
+      if (pr && pr.catch) pr.catch(err => {
+        if (!calan) return;
+        if (err && err.name === 'NotAllowedError') bekle(() => { if (calan && el) el.play().catch(() => {}); });
+        else if (!zamanlayici) { el = null; sentezBaslat(); }
+      });
     } catch (e) { sentezBaslat(); }
   }
   function durdur() {
@@ -1437,11 +1490,9 @@ const muzik = (() => {
     if (ana && ctx) { try { ana.gain.cancelScheduledValues(ctx.currentTime); ana.gain.setValueAtTime(ana.gain.value, ctx.currentTime); ana.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + .4); const a = ana; setTimeout(() => { try { a.disconnect(); } catch (e) {} }, 600); } catch (e) {} ana = null; }
   }
   function ikon() { $('muzikBtn').textContent = sessiz ? '🔇' : '🔊'; }
-  $('muzikBtn').onclick = () => { acildi = true; sessiz = !sessiz; depo.yaz('ft_sessiz', sessiz); ikon(); if (sessiz) durdur(); else if (document.body.dataset.ekran === 'ana') baslat(); };
+  $('muzikBtn').onclick = () => { sessiz = !sessiz; depo.yaz('ft_sessiz', sessiz); ikon(); if (sessiz) durdur(); else if (document.body.dataset.ekran === 'ana') baslat(); };
   ikon();
-  // Tarayıcılar sesi ancak bir dokunuştan sonra açar: ilk dokunuşta çalmaya başlar
-  const ilk = () => { acildi = true; if (document.body.dataset.ekran === 'ana') baslat(); };
-  addEventListener('pointerdown', ilk, { once: true }); addEventListener('keydown', ilk, { once: true });
+  baslat(); // site açılır açılmaz çalmayı dener
   return { baslat, durdur };
 })();
 window.muzikSes = muzik;
